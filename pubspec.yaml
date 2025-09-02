@@ -30,6 +30,7 @@ flutter:
     - lib/assets/images/centrojoaopessoa.jpeg
     - lib/assets/images/tambaba.jpeg
     - lib/assets/images/piscinasnaturais.jpeg
+    - lib/assets/images/profile.png
 
   fonts:
     - family: Poppins

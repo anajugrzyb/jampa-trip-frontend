@@ -20,7 +20,7 @@ class HomePage extends StatelessWidget {
                 children: [
                   const CircleAvatar(
                     radius: 40,
-                    backgroundImage: AssetImage("assets/profile.jpg"), // coloque sua imagem
+                    backgroundImage: AssetImage("lib/assets/images/profile.png"), 
                   ),
                   const SizedBox(height: 10),
                   Text(
