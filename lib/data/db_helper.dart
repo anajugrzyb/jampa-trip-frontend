@@ -45,7 +45,7 @@ class DBHelper {
   }
 
   Future<Map<String, dynamic>?> getUser(String email, String password) async {
-    final dbClient = await db; // <--- CORREÇÃO AQUI
+    final dbClient = await db; 
     final result = await dbClient.query(
       'users',
       where: 'email = ? AND password = ?',

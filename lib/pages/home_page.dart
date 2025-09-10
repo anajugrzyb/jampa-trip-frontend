@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'account_page.dart';
 
 class HomePage extends StatelessWidget {
   final String userName; 
@@ -11,7 +12,6 @@ class HomePage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Header com foto e boas-vindas
             Container(
               width: double.infinity,
               color: const Color(0xFF000080),
@@ -35,7 +35,6 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            // Campo de busca
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
@@ -50,13 +49,11 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            // Conteúdo rolável
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Destaques do dia
                     _buildSectionTitle("Destaques do dia"),
                     _buildHorizontalList([
                       {"img": "lib/assets/images/coqueirinho.jpeg", "title": "Praia de Coqueirinho"},
@@ -64,14 +61,12 @@ class HomePage extends StatelessWidget {
                       {"img": "lib/assets/images/centrojoaopessoa.jpeg", "title": "Centro Histórico"},
                     ]),
 
-                    // Lugares populares
                     _buildSectionTitle("Lugares populares perto de você"),
                     _buildHorizontalList([
                       {"img": "lib/assets/images/tambaba.jpeg", "title": "Praia de Tambaba"},
                       {"img": "lib/assets/images/piscinasnaturais.jpeg", "title": "Piscinas Naturais"},
                     ]),
 
-                    // Categorias
                     _buildSectionTitle("Lugares populares você"),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -90,7 +85,6 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            // Barra inferior
             Container(
               color: const Color(0xFF000080),
               padding: const EdgeInsets.symmetric(vertical: 8),
@@ -106,9 +100,16 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AccountPage(userName: userName), 
+                        ),
+                      );
+                    },
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    label: const Text("Voltar"),
+                    label: const Text("Perfil"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0000CD),
                     ),
@@ -122,7 +123,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // Função para título das seções
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -140,7 +140,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // Função para listas horizontais
   Widget _buildHorizontalList(List<Map<String, String>> items) {
     return SizedBox(
       height: 140,

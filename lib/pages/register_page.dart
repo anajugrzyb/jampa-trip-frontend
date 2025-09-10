@@ -34,7 +34,6 @@ class _RegisterPageState extends State<RegisterPage> {
       const SnackBar(content: Text("Usuário cadastrado com sucesso!")),
     );
 
-    // depois de cadastrar, pode voltar pro login
     Navigator.pop(context);
   }
 

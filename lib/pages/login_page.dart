@@ -25,7 +25,6 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    // consulta no SQLite
     final user = await DBHelper().getUser(emailController.text, passwordController.text);
 
     if (user != null) {
@@ -66,7 +65,6 @@ class _LoginPageState extends State<LoginPage> {
               Image.asset("lib/assets/images/planeta.png", height: 150),
               const SizedBox(height: 20),
 
-              // Campo de email
               TextField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -82,7 +80,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 16),
 
-              // Campo de senha
               TextField(
                 controller: passwordController,
                 obscureText: true,
@@ -98,7 +95,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 24),
 
-              // Botão Login
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -112,7 +108,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 20),
 
-              // Link para cadastro
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
