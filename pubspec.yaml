@@ -31,11 +31,8 @@ flutter:
     - lib/assets/images/tambaba.jpeg
     - lib/assets/images/piscinasnaturais.jpeg
     - lib/assets/images/profile.png
-    - lib/assets/images/visa.png
-    - lib/assets/images/mastercard.png
-    - lib/assets/images/americanexpress.png
-    - lib/assets/images/elo.png
     - lib/assets/images/pix.png
+    - lib/assets/images/cartao.jpg
   fonts:
     - family: Poppins
       fonts:

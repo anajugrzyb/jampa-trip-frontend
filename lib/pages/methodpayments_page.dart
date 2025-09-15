@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'pixpayment_page.dart';
+import 'cardregister_page.dart'; // <-- importa a página de cartão
 
 class MetodoPagamentoPage extends StatelessWidget {
   const MetodoPagamentoPage({super.key});
@@ -6,7 +8,7 @@ class MetodoPagamentoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF00008B), 
+      backgroundColor: const Color(0xFF00008B),
       appBar: AppBar(
         backgroundColor: const Color(0xFF00008B),
         elevation: 0,
@@ -21,11 +23,8 @@ class MetodoPagamentoPage extends StatelessWidget {
           Expanded(
             child: ListView(
               children: [
-                _metodoItem("Visa", "lib/assets/images/visa.png"),
-                _metodoItem("MasterCard", "lib/assets/images/mastercard.png"),
-                _metodoItem("American Express", "lib/assets/images/americanexpress.png"),
-                _metodoItem("Elo", "lib/assets/images/elo.png"),
-                _metodoItem("Pix", "lib/assets/images/pix.png", highlight: true),
+                _metodoItem("Crédito/Débito", "lib/assets/images/cartao.jpg", context),
+                _metodoItem("Pix", "lib/assets/images/pix.png", context, highlight: true),
               ],
             ),
           ),
@@ -48,7 +47,7 @@ class MetodoPagamentoPage extends StatelessWidget {
     );
   }
 
-  Widget _metodoItem(String nome, String iconPath, {bool highlight = false}) {
+  Widget _metodoItem(String nome, String iconPath, BuildContext context, {bool highlight = false}) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -59,17 +58,21 @@ class MetodoPagamentoPage extends StatelessWidget {
             : Border.all(color: Colors.transparent),
       ),
       child: ListTile(
-        leading: Image.asset(
-          iconPath,
-          width: 40,
-          height: 40,
-        ),
-        title: Text(
-          nome,
-          style: const TextStyle(color: Colors.white, fontSize: 18),
-        ),
+        leading: Image.asset(iconPath, width: 40, height: 40),
+        title: Text(nome, style: const TextStyle(color: Colors.white, fontSize: 18)),
         trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
         onTap: () {
+          if (nome == "Pix") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PixPaymentPage()),
+            );
+          } else if (nome == "Crédito" || nome == "Débito") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CardRegisterPage()),
+            );
+          }
         },
       ),
     );
@@ -81,7 +84,7 @@ class MetodoPagamentoPage extends StatelessWidget {
       icon: Icon(icon, color: Colors.white),
       label: Text(label),
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF4169E1), 
+        backgroundColor: const Color(0xFF4169E1),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       ),
