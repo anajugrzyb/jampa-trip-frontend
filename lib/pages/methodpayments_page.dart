@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pixpayment_page.dart';
-import 'cardregister_page.dart'; // <-- importa a página de cartão
+import 'cardregister_page.dart'; 
 
 class MetodoPagamentoPage extends StatelessWidget {
   const MetodoPagamentoPage({super.key});
@@ -53,9 +53,6 @@ class MetodoPagamentoPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF00008B),
         borderRadius: BorderRadius.circular(8),
-        border: highlight
-            ? Border.all(color: Colors.purpleAccent, width: 2)
-            : Border.all(color: Colors.transparent),
       ),
       child: ListTile(
         leading: Image.asset(iconPath, width: 40, height: 40),
@@ -67,7 +64,7 @@ class MetodoPagamentoPage extends StatelessWidget {
               context,
               MaterialPageRoute(builder: (context) => const PixPaymentPage()),
             );
-          } else if (nome == "Crédito" || nome == "Débito") {
+          } else if (nome == "Crédito/Débito") {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const CardRegisterPage()),
