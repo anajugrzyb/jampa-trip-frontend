@@ -20,7 +20,7 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 3,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE users (
@@ -30,32 +30,105 @@ class DBHelper {
             password TEXT
           )
         ''');
+
+        await db.execute('''
+          CREATE TABLE companies (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company_name TEXT,
+            cnpj TEXT,
+            email TEXT,
+            password TEXT
+          )
+        ''');
+
+        await db.execute('''
+          CREATE TABLE tours (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT,
+            local TEXT,
+            datas TEXT,
+            saida TEXT,
+            chegada TEXT,
+            qtd_pessoas TEXT,
+            info TEXT,
+            imagens TEXT,
+            preco REAL
+          )
+        ''');
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 3) {
+          await db.execute('''
+            CREATE TABLE tours (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              nome TEXT,
+              local TEXT,
+              datas TEXT,
+              saida TEXT,
+              chegada TEXT,
+              qtd_pessoas TEXT,
+              info TEXT,
+              imagens TEXT,
+              preco REAL
+            )
+          ''');
+        }
       },
     );
   }
+
+
 
   Future<int> insertUser(Map<String, dynamic> user) async {
     var dbClient = await db;
     return await dbClient.insert('users', user);
   }
 
-  Future<List<Map<String, dynamic>>> getUsers() async {
-    var dbClient = await db;
-    return await dbClient.query('users');
-  }
-
   Future<Map<String, dynamic>?> getUser(String email, String password) async {
-    final dbClient = await db; 
+    final dbClient = await db;
     final result = await dbClient.query(
       'users',
       where: 'email = ? AND password = ?',
-      whereArgs: [email, password],
+      whereArgs: [email.trim(), password.trim()],
     );
-
-    if (result.isNotEmpty) {
-      return result.first;
-    }
+    if (result.isNotEmpty) return result.first;
     return null;
   }
-}
 
+
+  Future<int> insertCompany(Map<String, dynamic> company) async {
+    var dbClient = await db;
+    return await dbClient.insert('companies', company);
+  }
+
+  Future<Map<String, dynamic>?> getCompany(String email, String password) async {
+    final dbClient = await db;
+    final result = await dbClient.query(
+      'companies',
+      where: 'email = ? AND password = ?',
+      whereArgs: [email.trim(), password.trim()],
+    );
+    if (result.isNotEmpty) return result.first;
+    return null;
+  }
+
+  Future<int> insertTour(Map<String, dynamic> tour) async {
+    var dbClient = await db;
+    return await dbClient.insert('tours', tour);
+  }
+
+  Future<List<Map<String, dynamic>>> getTours() async {
+    var dbClient = await db;
+    return await dbClient.query('tours');
+  }
+
+  Future<int> deleteTour(int id) async {
+    var dbClient = await db;
+    return await dbClient.delete('tours', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<int> updateTour(int id, Map<String, dynamic> tour) async {
+    var dbClient = await db;
+    return await dbClient.update('tours', tour, where: 'id = ?', whereArgs: [id]);
+  }
+}

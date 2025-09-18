@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'register_page.dart';
 import 'home_page.dart';
+import 'accountcompany_page.dart';
 import 'package:jampa_trip/data/db_helper.dart';
 
 class LoginPage extends StatefulWidget {
@@ -25,7 +26,9 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    final user = await DBHelper().getUser(emailController.text, passwordController.text);
+    final db = DBHelper();
+
+    final user = await db.getUser(email, password);
 
     if (user != null) {
       Navigator.pushReplacement(
@@ -34,11 +37,25 @@ class _LoginPageState extends State<LoginPage> {
           builder: (context) => HomePage(userName: user['name']),
         ),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email ou senha incorretos")),
-      );
+      return;
     }
+
+    final company = await db.getCompany(email, password);
+
+    if (company != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              AccountCompanyPage(userName: company['company_name']),
+        ),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Email ou senha incorretos")),
+    );
   }
 
   @override
@@ -61,10 +78,8 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 20),
-
               Image.asset("lib/assets/images/planeta.png", height: 150),
               const SizedBox(height: 20),
-
               TextField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -79,7 +94,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 16),
-
               TextField(
                 controller: passwordController,
                 obscureText: true,
@@ -94,11 +108,10 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 24),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _login, // chama a validação
+                  onPressed: _login,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4169E1),
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -107,7 +120,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 20),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -140,3 +152,4 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+

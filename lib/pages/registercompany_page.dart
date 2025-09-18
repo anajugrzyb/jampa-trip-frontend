@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:jampa_trip/data/db_helper.dart';
-import 'registercompany_page.dart';
+import 'accountcompany_page.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class RegisterCompanyPage extends StatefulWidget {
+  const RegisterCompanyPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<RegisterCompanyPage> createState() => _RegisterCompanyPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
-  final nameController = TextEditingController();
+class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
+  final companyNameController = TextEditingController();
+  final cnpjController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  void _register() async {
+  void _registerCompany() async {
     if (passwordController.text != confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("As senhas não coincidem")),
@@ -23,25 +24,25 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    final user = {
-      'name': nameController.text,
-      'email': emailController.text,
-      'password': passwordController.text,
+    final company = {
+      'company_name': companyNameController.text.trim(),
+      'cnpj': cnpjController.text.trim(),
+      'email': emailController.text.trim(),
+      'password': passwordController.text.trim(),
     };
 
-    await DBHelper().insertUser(user);
+    await DBHelper().insertCompany(company);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Usuário cadastrado com sucesso!")),
+      const SnackBar(content: Text("Empresa cadastrada com sucesso!")),
     );
 
-    Navigator.pop(context);
-  }
-
-  void _goToCompanyRegister() {
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const RegisterCompanyPage()),
+      MaterialPageRoute(
+        builder: (context) =>
+            AccountCompanyPage(userName: companyNameController.text),
+      ),
     );
   }
 
@@ -49,6 +50,11 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF000080),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF000080),
+        title: const Text("Cadastro de Empresa"),
+        centerTitle: true,
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -56,7 +62,7 @@ class _RegisterPageState extends State<RegisterPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Seja bem vindo (a)!",
+                "Registre sua empresa",
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 22,
@@ -65,71 +71,63 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
               const SizedBox(height: 32),
-
               TextField(
-                controller: nameController,
+                controller: companyNameController,
                 decoration: const InputDecoration(
-                  hintText: "Digite seu nome completo",
+                  hintText: "Nome da empresa",
                   filled: true,
                   fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 16),
-
+              TextField(
+                controller: cnpjController,
+                decoration: const InputDecoration(
+                  hintText: "CNPJ",
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 16),
               TextField(
                 controller: emailController,
                 decoration: const InputDecoration(
-                  hintText: "Digite seu e-mail",
+                  hintText: "E-mail da empresa",
                   filled: true,
                   fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 16),
-
               TextField(
                 controller: passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(
-                  hintText: "Digite sua senha",
+                  hintText: "Senha",
                   filled: true,
                   fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 16),
-
               TextField(
                 controller: confirmPasswordController,
                 obscureText: true,
                 decoration: const InputDecoration(
-                  hintText: "Confirme sua senha",
+                  hintText: "Confirme a senha",
                   filled: true,
                   fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 24),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _register,
+                  onPressed: _registerCompany,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4169E1),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Text("Cadastrar"),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              TextButton(
-                onPressed: _goToCompanyRegister,
-                child: const Text(
-                  "Registrar como empresa",
-                  style: TextStyle(
-                    color: Colors.white,
-                    decoration: TextDecoration.underline,
-                  ),
+                  child: const Text("Cadastrar empresa"),
                 ),
               ),
             ],
@@ -139,5 +137,4 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 }
-
 
