@@ -4,7 +4,8 @@ import '../data/db_helper.dart';
 import 'addtour_page.dart';
 
 class MyToursPage extends StatefulWidget {
-  const MyToursPage({super.key});
+  final String userName; 
+  const MyToursPage({super.key, required this.userName});
 
   @override
   State<MyToursPage> createState() => _MyToursPageState();
@@ -40,14 +41,14 @@ class _MyToursPageState extends State<MyToursPage> {
               backgroundImage: AssetImage("assets/profile.jpg"),
             ),
             const SizedBox(height: 8),
-            const Text(
-              "Nômade turismo",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+           Text(
+            widget.userName,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
+          ),
             const Text(
               "Passeios",
               style: TextStyle(
@@ -133,7 +134,6 @@ class _MyToursPageState extends State<MyToursPage> {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () {
-                              // ação de editar
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blueAccent,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jampa_trip/data/db_helper.dart';
 import 'accountcompany_page.dart';
+import 'login_page.dart';
 
 class RegisterCompanyPage extends StatefulWidget {
   const RegisterCompanyPage({super.key});
@@ -68,54 +69,70 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
+                  
                 ),
               ),
               const SizedBox(height: 32),
               TextField(
                 controller: companyNameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "Nome da empresa",
                   filled: true,
                   fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: cnpjController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "CNPJ",
                   filled: true,
                   fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: emailController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "E-mail da empresa",
                   filled: true,
                   fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(
+                decoration:  InputDecoration(
                   hintText: "Senha",
                   filled: true,
                   fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: confirmPasswordController,
                 obscureText: true,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "Confirme a senha",
                   filled: true,
                   fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -125,10 +142,48 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                   onPressed: _registerCompany,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4169E1),
+                    foregroundColor: Colors.white, // texto branco
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8), // 🔥 cantos arredondados
+                    ),
                   ),
-                  child: const Text("Cadastrar empresa"),
+                  child: const Text(
+                    "Cadastrar empresa",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
+              ),
+
+              const SizedBox(height: 16),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Já possui uma conta? ",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginPage()),
+                      );
+                    },
+                    child: const Text(
+                      "Entrar",
+                      style: TextStyle(
+                        color: Color(0xFF4169E1),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

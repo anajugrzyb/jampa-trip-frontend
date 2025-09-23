@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jampa_trip/data/db_helper.dart';
 import 'registercompany_page.dart';
+import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -68,20 +69,27 @@ class _RegisterPageState extends State<RegisterPage> {
 
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(
+                decoration:  InputDecoration(
                   hintText: "Digite seu nome completo",
                   filled: true,
                   fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  
                 ),
               ),
               const SizedBox(height: 16),
 
               TextField(
                 controller: emailController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "Digite seu e-mail",
                   filled: true,
                   fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -89,10 +97,13 @@ class _RegisterPageState extends State<RegisterPage> {
               TextField(
                 controller: passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "Digite sua senha",
                   filled: true,
                   fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -100,10 +111,13 @@ class _RegisterPageState extends State<RegisterPage> {
               TextField(
                 controller: confirmPasswordController,
                 obscureText: true,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "Confirme sua senha",
                   filled: true,
                   fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -114,14 +128,23 @@ class _RegisterPageState extends State<RegisterPage> {
                   onPressed: _register,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4169E1),
+                    foregroundColor: Colors.white, // texto branco
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8), // 🔥 cantos arredondados
+                    ),
                   ),
-                  child: const Text("Cadastrar"),
+                  child: const Text(
+                    "Cadastrar",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
 
               const SizedBox(height: 16),
-
               TextButton(
                 onPressed: _goToCompanyRegister,
                 child: const Text(
@@ -131,6 +154,32 @@ class _RegisterPageState extends State<RegisterPage> {
                     decoration: TextDecoration.underline,
                   ),
                 ),
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Já possui uma conta? ",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginPage()),
+                      );
+                    },
+                    child: const Text(
+                      "Entrar",
+                      style: TextStyle(
+                        color: Color(0xFF4169E1),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

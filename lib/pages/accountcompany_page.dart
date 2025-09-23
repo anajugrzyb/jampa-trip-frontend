@@ -85,7 +85,7 @@ class AccountCompanyPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const MyToursPage(),
+                            builder: (context) => MyToursPage(userName: userName),
                           ),
                         );
                       },
