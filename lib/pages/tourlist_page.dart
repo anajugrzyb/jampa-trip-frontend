@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/db_helper.dart';
 
 class TourListPage extends StatefulWidget {
-  final String query; // texto digitado na pesquisa
+  final String query; 
   const TourListPage({super.key, required this.query});
 
   @override
@@ -170,7 +170,6 @@ class _TourListPageState extends State<TourListPage> {
                                   width: double.infinity,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      // ação do botão, ex: detalhar passeio
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.blue[800],

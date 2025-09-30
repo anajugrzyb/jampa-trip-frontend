@@ -31,7 +31,7 @@ class _AddTourPageState extends State<AddTourPage> {
     super.initState();
 
     initializeDateFormatting('pt_BR', null).then((_) {
-      setState(() {}); // Força rebuild para aplicar o locale
+      setState(() {}); 
     });
 
     if (widget.tourToEdit != null) {

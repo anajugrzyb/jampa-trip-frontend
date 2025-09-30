@@ -20,13 +20,12 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 4, // Aumente a versão sempre que fizer alterações
+      version: 4, 
       onCreate: (db, version) async {
         await _createTables(db);
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 3) {
-          // Se a tabela tours não existir, cria
           await db.execute('''
             CREATE TABLE IF NOT EXISTS tours (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -43,7 +42,6 @@ class DBHelper {
           ''');
         }
         if (oldVersion < 4) {
-          // Adiciona a coluna 'preco' se não existir
           await db.execute('ALTER TABLE tours ADD COLUMN preco REAL DEFAULT 0');
         }
       },
