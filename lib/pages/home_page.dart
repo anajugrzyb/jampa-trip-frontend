@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'account_page.dart';
+import 'tourlist_page.dart'; 
 
 class HomePage extends StatelessWidget {
   final String userName; 
@@ -12,6 +13,7 @@ class HomePage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
+            // Cabeçalho
             Container(
               width: double.infinity,
               color: const Color(0xFF000080),
@@ -35,9 +37,20 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
+            // Barra de pesquisa
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
+                onSubmitted: (value) {
+                  if (value.trim().isNotEmpty) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TourListPage(query: value.trim()),
+                      ),
+                    );
+                  }
+                },
                 decoration: InputDecoration(
                   hintText: "Para onde você quer ir?",
                   prefixIcon: const Icon(Icons.search),
@@ -49,6 +62,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
+            // Conteúdo principal
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -67,7 +81,7 @@ class HomePage extends StatelessWidget {
                       {"img": "lib/assets/images/piscinasnaturais.jpeg", "title": "Piscinas Naturais"},
                     ]),
 
-                    _buildSectionTitle("Lugares populares você"),
+                    _buildSectionTitle("Categorias"),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       child: Row(
@@ -85,6 +99,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
+            // Rodapé
             Container(
               color: const Color(0xFF000080),
               padding: const EdgeInsets.symmetric(vertical: 8),
@@ -108,7 +123,7 @@ class HomePage extends StatelessWidget {
                         ),
                       );
                     },
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    icon: const Icon(Icons.person, color: Colors.white),
                     label: const Text("Perfil"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0000CD),
@@ -123,6 +138,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  // Widgets auxiliares
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -203,3 +219,4 @@ class _CategoryIcon extends StatelessWidget {
     );
   }
 }
+

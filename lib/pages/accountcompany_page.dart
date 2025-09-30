@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'mytours_page.dart';
+import 'login_page.dart';
 
 class AccountCompanyPage extends StatelessWidget {
   final String userName;
@@ -120,7 +121,13 @@ class AccountCompanyPage extends StatelessWidget {
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LoginPage()),
+                          (Route<dynamic> route) => false,
+                        );
+                      },
                       icon: const Icon(Icons.logout),
                       label: const Text("Sair"),
                     ),

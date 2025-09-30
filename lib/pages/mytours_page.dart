@@ -41,14 +41,14 @@ class _MyToursPageState extends State<MyToursPage> {
               backgroundImage: AssetImage("assets/profile.jpg"),
             ),
             const SizedBox(height: 8),
-           Text(
-            widget.userName,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+            Text(
+              widget.userName,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
             const Text(
               "Passeios",
               style: TextStyle(
@@ -133,7 +133,17 @@ class _MyToursPageState extends State<MyToursPage> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              // Editar passeio
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddTourPage(tourToEdit: t),
+                                ),
+                              );
+                              if (result == true) {
+                                _carregarPasseios();
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blueAccent,
@@ -159,11 +169,14 @@ class _MyToursPageState extends State<MyToursPage> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
-                        await Navigator.push(
+                        // Cadastrar passeio
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => const AddTourPage()),
                         );
-                        _carregarPasseios();
+                        if (result == true) {
+                          _carregarPasseios();
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
@@ -223,3 +236,4 @@ class _MyToursPageState extends State<MyToursPage> {
     );
   }
 }
+
