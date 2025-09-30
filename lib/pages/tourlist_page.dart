@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../data/db_helper.dart';
+import 'addtour_page.dart';
 
 class TourListPage extends StatefulWidget {
-  final String query; 
+  final String query;
   const TourListPage({super.key, required this.query});
 
   @override
@@ -27,6 +28,7 @@ class _TourListPageState extends State<TourListPage> {
 
     setState(() {
       _tours = tours.where((tour) {
+        if (query.isEmpty) return true; 
         final nome = (tour['nome'] ?? '').toLowerCase();
         final saida = (tour['saida'] ?? '').toLowerCase();
         final chegada = (tour['chegada'] ?? '').toLowerCase();
@@ -34,6 +36,13 @@ class _TourListPageState extends State<TourListPage> {
       }).toList();
       _isLoading = false;
     });
+  }
+
+  Future<void> _reloadTours() async {
+    setState(() {
+      _isLoading = true;
+    });
+    await _searchTours();
   }
 
   Widget _buildImage(String path) {
@@ -59,8 +68,23 @@ class _TourListPageState extends State<TourListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Resultados para \"${widget.query}\""),
+        title: Text(widget.query.isEmpty
+            ? "Todos os passeios"
+            : "Resultados para \"${widget.query}\""),
         backgroundColor: Colors.blue[800],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blue[800],
+        child: const Icon(Icons.add),
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddTourPage()),
+          );
+          if (result == true) {
+            _reloadTours();
+          }
+        },
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -76,7 +100,10 @@ class _TourListPageState extends State<TourListPage> {
                   itemCount: _tours.length,
                   itemBuilder: (context, index) {
                     final tour = _tours[index];
-                    final imagens = (tour['imagens'] as List<dynamic>).cast<String>();
+
+                    final imagens =
+                        (tour['imagens'] as String?)?.split(',') ?? [];
+
                     int currentPage = 0;
                     final PageController pageController = PageController();
 
@@ -109,7 +136,9 @@ class _TourListPageState extends State<TourListPage> {
                                           currentPage = index;
                                         });
                                       },
-                                      children: imagens.map((path) => _buildImage(path)).toList(),
+                                      children: imagens
+                                          .map((path) => _buildImage(path))
+                                          .toList(),
                                     ),
                                   ),
                                   const SizedBox(height: 6),
@@ -147,7 +176,8 @@ class _TourListPageState extends State<TourListPage> {
                                 const SizedBox(height: 8),
                                 Row(
                                   children: [
-                                    const Icon(Icons.departure_board, size: 18, color: Colors.grey),
+                                    const Icon(Icons.departure_board,
+                                        size: 18, color: Colors.grey),
                                     const SizedBox(width: 4),
                                     Text("Saída: ${tour['saida']}"),
                                     const SizedBox(width: 16),
@@ -169,8 +199,7 @@ class _TourListPageState extends State<TourListPage> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: ElevatedButton(
-                                    onPressed: () {
-                                    },
+                                    onPressed: () {},
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.blue[800],
                                       shape: RoundedRectangleBorder(
@@ -192,4 +221,3 @@ class _TourListPageState extends State<TourListPage> {
     );
   }
 }
-
