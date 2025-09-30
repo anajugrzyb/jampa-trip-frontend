@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-
+import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
 import '../data/db_helper.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class AddTourPage extends StatefulWidget {
   final Map<String, dynamic>? tourToEdit;
@@ -22,12 +24,16 @@ class _AddTourPageState extends State<AddTourPage> {
   final _infoController = TextEditingController();
   int? _qtdPessoas;
   List<String> _imagens = [];
-
   final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
+
+    initializeDateFormatting('pt_BR', null).then((_) {
+      setState(() {}); // Força rebuild para aplicar o locale
+    });
+
     if (widget.tourToEdit != null) {
       final tour = widget.tourToEdit!;
       _nomeController.text = tour['nome'] ?? '';
@@ -42,29 +48,77 @@ class _AddTourPageState extends State<AddTourPage> {
   }
 
   Future<void> _selecionarData() async {
-    DateTime? picked = await showDatePicker(
+    DateTime selectedDate = DateTime.now();
+
+    await showDialog(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2023),
-      lastDate: DateTime(2100),
+      builder: (_) => AlertDialog(
+        title: const Text("Selecione a data"),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: TableCalendar(
+            locale: 'pt_BR',
+            firstDay: DateTime(2023),
+            lastDay: DateTime(2100),
+            focusedDay: selectedDate,
+            selectedDayPredicate: (day) => isSameDay(selectedDate, day),
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                selectedDate = selectedDay;
+                _dataController.text =
+                    DateFormat('dd/MM/yyyy').format(selectedDate);
+              });
+              Navigator.pop(context);
+            },
+            calendarStyle: const CalendarStyle(
+              todayDecoration: BoxDecoration(
+                color: Colors.blue,
+                shape: BoxShape.circle,
+              ),
+              selectedDecoration: BoxDecoration(
+                color: Colors.lightBlue,
+                shape: BoxShape.circle,
+              ),
+            ),
+            headerStyle: const HeaderStyle(
+              formatButtonVisible: false,
+              titleCentered: true,
+            ),
+          ),
+        ),
+      ),
     );
-    if (picked != null) {
-      setState(() {
-        _dataController.text = "${picked.day}/${picked.month}/${picked.year}";
-      });
-    }
   }
 
   Future<void> _selecionarHora(TextEditingController controller) async {
-    TimeOfDay? picked = await showTimePicker(
+    await showDialog(
       context: context,
-      initialTime: TimeOfDay.now(),
+      builder: (_) => AlertDialog(
+        title: const Text("Selecione o horário"),
+        content: SizedBox(
+          height: 180,
+          child: TimePickerSpinner(
+            is24HourMode: true,
+            normalTextStyle:
+                const TextStyle(fontSize: 18, color: Colors.black54),
+            highlightedTextStyle:
+                const TextStyle(fontSize: 22, color: Colors.black),
+            spacing: 50,
+            itemHeight: 60,
+            onTimeChange: (time) {
+              controller.text =
+                  '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
     );
-    if (picked != null) {
-      setState(() {
-        controller.text = picked.format(context);
-      });
-    }
   }
 
   Future<void> _pickImage() async {
@@ -171,17 +225,20 @@ class _AddTourPageState extends State<AddTourPage> {
                   onPressed: _pickImage,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[600],
-                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 18, horizontal: 20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const Text("Inserir imagens", style: TextStyle(color: Colors.white)),
+                  child: const Text("Inserir imagens",
+                      style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),
             const SizedBox(height: 10),
-            _buildStyledField("Informações adicionais", _infoController, maxLines: 4),
+            _buildStyledField("Informações adicionais", _infoController,
+                maxLines: 4),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _saveTour,
@@ -210,7 +267,8 @@ class _AddTourPageState extends State<AddTourPage> {
     );
   }
 
-  Widget _buildStyledField(String label, TextEditingController controller, {int maxLines = 1}) {
+  Widget _buildStyledField(String label, TextEditingController controller,
+      {int maxLines = 1}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: TextField(
@@ -236,4 +294,3 @@ class _AddTourPageState extends State<AddTourPage> {
     );
   }
 }
-

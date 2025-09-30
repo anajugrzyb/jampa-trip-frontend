@@ -32,6 +32,17 @@ class _MyToursPageState extends State<MyToursPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF00008B),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text(
+          "Meus Passeios",
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+      ),
+      extendBodyBehindAppBar: true,
       body: SafeArea(
         child: Column(
           children: [
@@ -134,7 +145,6 @@ class _MyToursPageState extends State<MyToursPage> {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () async {
-                              // Editar passeio
                               final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -169,7 +179,6 @@ class _MyToursPageState extends State<MyToursPage> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
-                        // Cadastrar passeio
                         final result = await Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => const AddTourPage()),
@@ -191,41 +200,6 @@ class _MyToursPageState extends State<MyToursPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.home),
-                          label: const Text("Início"),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[600],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.arrow_back),
-                          label: const Text("Voltar"),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[600],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                   const SizedBox(height: 16),
                 ],
               ),
@@ -236,4 +210,3 @@ class _MyToursPageState extends State<MyToursPage> {
     );
   }
 }
-

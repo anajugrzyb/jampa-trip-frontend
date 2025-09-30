@@ -10,51 +10,37 @@ class AccountCompanyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF000080), 
+      backgroundColor: const Color(0xFF000080),
       body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 16, top: 8),
-              child: Row(
+            const SizedBox(height: 40),
+
+            Center(
+              child: Column(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                  const CircleAvatar(
+                    radius: 50,
+                    backgroundImage: AssetImage("assets/profile.jpg"),
                   ),
+                  const SizedBox(height: 12),
+                  Text(
+                    userName,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
                   const Text(
-                    "Back",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    "Informações",
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
                   ),
                 ],
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            const CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage("assets/profile.jpg"),
-            ),
-
-            const SizedBox(height: 12),
-
-            Text(
-              userName,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const Text(
-              "Informações",
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
               ),
             ),
 
@@ -64,7 +50,7 @@ class AccountCompanyPage extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: const BoxDecoration(
-                  color: Color(0xFF0018A8), 
+                  color: Color(0xFF0018A8),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20),
@@ -109,9 +95,7 @@ class AccountCompanyPage extends StatelessWidget {
                       subtitle: "Meus comentários",
                       onTap: () {},
                     ),
-
                     const SizedBox(height: 16),
-
                     OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
@@ -163,3 +147,4 @@ class AccountCompanyPage extends StatelessWidget {
     );
   }
 }
+
