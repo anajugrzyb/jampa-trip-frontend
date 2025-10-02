@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../data/db_helper.dart';
-import 'addtour_page.dart';
+import 'adview_page.dart';
 
 class TourListPage extends StatefulWidget {
   final String query;
@@ -73,19 +73,7 @@ class _TourListPageState extends State<TourListPage> {
             : "Resultados para \"${widget.query}\""),
         backgroundColor: Colors.blue[800],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue[800],
-        child: const Icon(Icons.add),
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddTourPage()),
-          );
-          if (result == true) {
-            _reloadTours();
-          }
-        },
-      ),
+
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _tours.isEmpty
@@ -199,7 +187,14 @@ class _TourListPageState extends State<TourListPage> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AdViewPage(tour: tour),
+                                      ),
+                                    );
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.blue[800],
                                       shape: RoundedRectangleBorder(

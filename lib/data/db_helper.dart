@@ -20,7 +20,7 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 4, 
+      version: 5, 
       onCreate: (db, version) async {
         await _createTables(db);
       },
@@ -44,12 +44,25 @@ class DBHelper {
         if (oldVersion < 4) {
           await db.execute('ALTER TABLE tours ADD COLUMN preco REAL DEFAULT 0');
         }
+        if (oldVersion < 5) {
+          await db.execute('''
+            CREATE TABLE IF NOT EXISTS reservas (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              tour_id INTEGER,
+              nome TEXT,
+              telefone TEXT,
+              endereco TEXT,
+              qtd_pessoas INTEGER,
+              observacoes TEXT,
+              FOREIGN KEY (tour_id) REFERENCES tours (id) ON DELETE CASCADE
+            )
+          ''');
+        }
       },
     );
   }
 
   Future<void> _createTables(Database db) async {
-    // Tabelas de usuários e empresas
     await db.execute('''
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,7 +82,6 @@ class DBHelper {
       )
     ''');
 
-    // Tabela de tours
     await db.execute('''
       CREATE TABLE IF NOT EXISTS tours (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -82,6 +94,19 @@ class DBHelper {
         info TEXT,
         imagens TEXT,
         preco REAL DEFAULT 0
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS reservas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tour_id INTEGER,
+        nome TEXT,
+        telefone TEXT,
+        endereco TEXT,
+        qtd_pessoas INTEGER,
+        observacoes TEXT,
+        FOREIGN KEY (tour_id) REFERENCES tours (id) ON DELETE CASCADE
       )
     ''');
   }
@@ -138,5 +163,20 @@ class DBHelper {
     var dbClient = await db;
     return await dbClient.delete('tours', where: 'id = ?', whereArgs: [id]);
   }
-}
 
+  // ===== Reservas =====
+  Future<int> insertReserva(Map<String, dynamic> reserva) async {
+    var dbClient = await db;
+    return await dbClient.insert('reservas', reserva);
+  }
+
+  Future<List<Map<String, dynamic>>> getReservas() async {
+    var dbClient = await db;
+    return await dbClient.query('reservas', orderBy: 'id DESC');
+  }
+
+  Future<int> deleteReserva(int id) async {
+    var dbClient = await db;
+    return await dbClient.delete('reservas', where: 'id = ?', whereArgs: [id]);
+  }
+}

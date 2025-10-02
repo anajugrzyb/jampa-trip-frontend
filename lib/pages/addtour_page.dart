@@ -5,6 +5,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import '../data/db_helper.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 
 class AddTourPage extends StatefulWidget {
   final Map<String, dynamic>? tourToEdit;
@@ -17,11 +18,12 @@ class AddTourPage extends StatefulWidget {
 
 class _AddTourPageState extends State<AddTourPage> {
   final _nomeController = TextEditingController();
-  final _localController = TextEditingController();
   final _dataController = TextEditingController();
   final _saidaController = TextEditingController();
   final _chegadaController = TextEditingController();
   final _infoController = TextEditingController();
+  final _precoController = TextEditingController();
+
   int? _qtdPessoas;
   List<String> _imagens = [];
   final ImagePicker _picker = ImagePicker();
@@ -31,19 +33,32 @@ class _AddTourPageState extends State<AddTourPage> {
     super.initState();
 
     initializeDateFormatting('pt_BR', null).then((_) {
-      setState(() {}); 
+      setState(() {});
     });
 
     if (widget.tourToEdit != null) {
       final tour = widget.tourToEdit!;
       _nomeController.text = tour['nome'] ?? '';
-      _localController.text = tour['local'] ?? '';
       _dataController.text = tour['datas'] ?? '';
       _saidaController.text = tour['saida'] ?? '';
       _chegadaController.text = tour['chegada'] ?? '';
       _infoController.text = tour['info'] ?? '';
       _qtdPessoas = int.tryParse(tour['qtd_pessoas'] ?? '0');
       _imagens = (tour['imagens'] as String?)?.split(',') ?? [];
+
+      // já mostra o preço formatado
+      if (tour['preco'] != null) {
+        double preco = tour['preco'] is String
+            ? double.tryParse(tour['preco']) ?? 0.0
+            : (tour['preco'] as num).toDouble();
+        _precoController.text = toCurrencyString(
+          preco.toString(),
+          leadingSymbol: 'R\$ ',
+          useSymbolPadding: true,
+          thousandSeparator: ThousandSeparator.Period,
+          mantissaLength: 2,
+        );
+      }
     }
   }
 
@@ -131,16 +146,21 @@ class _AddTourPageState extends State<AddTourPage> {
   }
 
   void _saveTour() async {
+    String precoFormatado = _precoController.text
+        .replaceAll('R\$', '')
+        .replaceAll('.', '')
+        .replaceAll(',', '.')
+        .trim();
+
     final tour = {
       'nome': _nomeController.text.trim(),
-      'local': _localController.text.trim(),
       'datas': _dataController.text.trim(),
       'saida': _saidaController.text.trim(),
       'chegada': _chegadaController.text.trim(),
       'info': _infoController.text.trim(),
       'qtd_pessoas': _qtdPessoas?.toString() ?? '0',
       'imagens': _imagens.join(','),
-      'preco': 0.0,
+      'preco': double.tryParse(precoFormatado) ?? 0.0,
     };
 
     final db = DBHelper();
@@ -178,7 +198,25 @@ class _AddTourPageState extends State<AddTourPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildStyledField("Digite o nome do passeio", _nomeController),
-            _buildStyledField("Localização", _localController),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: TextField(
+                controller: _precoController,
+                keyboardType: TextInputType.number,
+                style: const TextStyle(color: Colors.white),
+                inputFormatters: [
+                  MoneyInputFormatter(
+                    leadingSymbol: 'R\$ ',
+                    useSymbolPadding: true,
+                    thousandSeparator: ThousandSeparator.Period,
+                    mantissaLength: 2,
+                  ),
+                ],
+                decoration: _inputDecoration("Preço (R\$)"),
+              ),
+            ),
+
             GestureDetector(
               onTap: _selecionarData,
               child: AbsorbPointer(
@@ -268,12 +306,13 @@ class _AddTourPageState extends State<AddTourPage> {
   }
 
   Widget _buildStyledField(String label, TextEditingController controller,
-      {int maxLines = 1}) {
+      {int maxLines = 1, TextInputType keyboardType = TextInputType.text}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: TextField(
         controller: controller,
         maxLines: maxLines,
+        keyboardType: keyboardType,
         style: const TextStyle(color: Colors.white),
         decoration: _inputDecoration(label),
       ),
