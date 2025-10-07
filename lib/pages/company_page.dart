@@ -29,30 +29,18 @@ class _CompanyPageState extends State<CompanyPage> {
     });
   }
 
-  Widget _buildStarRating(double rating) {
-    return Row(
-      children: List.generate(5, (index) {
-        return Icon(
-          index < rating ? Icons.star : Icons.star_border,
-          color: Colors.amber,
-          size: 20,
-        );
-      }),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final empresa = widget.company;
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: const Color(0xFF00008B),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 250,
             pinned: true,
-            backgroundColor: Colors.blue[900],
+            backgroundColor: const Color(0xFF00008B),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () => Navigator.pop(context),
@@ -66,8 +54,8 @@ class _CompanyPageState extends State<CompanyPage> {
                           File(empresa['imagem']),
                           fit: BoxFit.cover,
                         )
-                      : Container(color: Colors.blue[300]),
-                  Container(color: Colors.black.withOpacity(0.4)),
+                      : Container(color: Colors.blue[700]),
+                  Container(color: Colors.black.withOpacity(0.5)),
                   Align(
                     alignment: Alignment.bottomLeft,
                     child: Padding(
@@ -77,6 +65,7 @@ class _CompanyPageState extends State<CompanyPage> {
                         children: [
                           CircleAvatar(
                             radius: 36,
+                            backgroundColor: Colors.white,
                             backgroundImage: empresa['imagem'] != null &&
                                     empresa['imagem'].isNotEmpty
                                 ? FileImage(File(empresa['imagem']))
@@ -100,14 +89,14 @@ class _CompanyPageState extends State<CompanyPage> {
                                 ),
                                 const SizedBox(height: 4),
                                 Row(
-                                  children: [
-                                    const Icon(Icons.star,
+                                  children: const [
+                                    Icon(Icons.star,
                                         color: Colors.amber, size: 18),
-                                    const SizedBox(width: 4),
+                                    SizedBox(width: 4),
                                     Text(
-                                      (empresa['avaliacao'] ?? '4.8').toString(),
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 16),
+                                      "4.8",
+                                      style: TextStyle(
+                                          color: Colors.white70, fontSize: 16),
                                     ),
                                   ],
                                 ),
@@ -125,48 +114,38 @@ class _CompanyPageState extends State<CompanyPage> {
 
           SliverToBoxAdapter(
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              color: Colors.white,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    _buildCategory("Avaliações"),
-                  ],
+              width: double.infinity,
+              color: Colors.blue[800],
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                empresa['descricao'] ??
+                    'Explore os melhores passeios e experiências desta empresa!',
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  height: 1.5,
                 ),
               ),
             ),
           ),
 
           SliverToBoxAdapter(
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Text(
-                empresa['descricao'] ??
-                    'Explore os melhores passeios e experiências desta empresa!',
-                style: const TextStyle(fontSize: 16, color: Colors.black87),
-              ),
-            ),
-          ),
-
-          SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               child: const Text(
-                "Anúncios",
+                "Passeios disponíveis",
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87),
+                    color: Colors.white),
               ),
             ),
           ),
 
           SliverToBoxAdapter(
             child: SizedBox(
-              height: 310, 
+              height: 320,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: _tours.length,
@@ -175,16 +154,16 @@ class _CompanyPageState extends State<CompanyPage> {
                   final imagens = (t['imagens'] as String?)?.split(',') ?? [];
 
                   return Container(
-                    width: 200,
+                    width: 220,
                     margin: const EdgeInsets.only(left: 16, right: 8, bottom: 16),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.blue[700],
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
                         ),
                       ],
                     ),
@@ -204,14 +183,15 @@ class _CompanyPageState extends State<CompanyPage> {
                                 )
                               : Container(
                                   height: 140,
-                                  color: Colors.grey[300],
+                                  color: Colors.blue[600],
                                   alignment: Alignment.center,
-                                  child: const Icon(Icons.image, size: 40),
+                                  child: const Icon(Icons.image_not_supported,
+                                      size: 40, color: Colors.white70),
                                 ),
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(12),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -220,13 +200,14 @@ class _CompanyPageState extends State<CompanyPage> {
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
+                                    color: Colors.white,
                                   ),
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
                                   t['local'] ?? '',
                                   style: const TextStyle(
-                                    color: Colors.black54,
+                                    color: Colors.white70,
                                     fontSize: 13,
                                   ),
                                 ),
@@ -235,7 +216,7 @@ class _CompanyPageState extends State<CompanyPage> {
                                   "R\$ ${t['preco'] ?? '0,00'}",
                                   style: const TextStyle(
                                     fontSize: 16,
-                                    color: Colors.blueAccent,
+                                    color: Colors.lightBlueAccent,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -253,14 +234,17 @@ class _CompanyPageState extends State<CompanyPage> {
                                       );
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blueAccent,
+                                      backgroundColor: Colors.blue[400],
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 8),
                                     ),
-                                    child: const Text("Ver mais"),
+                                    child: const Text(
+                                      "Ver mais",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -275,25 +259,6 @@ class _CompanyPageState extends State<CompanyPage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildCategory(String title) {
-    return Container(
-      margin: const EdgeInsets.only(right: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.blue[50],
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.blueAccent),
-      ),
-      child: Text(
-        title,
-        style: const TextStyle(
-          color: Colors.blueAccent,
-          fontWeight: FontWeight.w500,
-        ),
       ),
     );
   }

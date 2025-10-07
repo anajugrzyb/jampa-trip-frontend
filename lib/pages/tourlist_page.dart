@@ -59,16 +59,17 @@ class _TourListPageState extends State<TourListPage>
   Widget _buildTourCard(Map<String, dynamic> tour) {
     final imagens = (tour['imagens'] as String?)?.split(',') ?? [];
     final empresa = tour['empresa'] ?? 'Sem empresa';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.blue[800],
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.25),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -77,8 +78,7 @@ class _TourListPageState extends State<TourListPage>
         children: [
           if (imagens.isNotEmpty && imagens.first.isNotEmpty)
             ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
               child: Image.file(
                 File(imagens.first),
                 height: 180,
@@ -89,9 +89,14 @@ class _TourListPageState extends State<TourListPage>
           else
             Container(
               height: 180,
-              color: Colors.grey[300],
+              decoration: BoxDecoration(
+                color: Colors.blue[700],
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(16)),
+              ),
               alignment: Alignment.center,
-              child: const Icon(Icons.image_not_supported, size: 50),
+              child: const Icon(Icons.image_not_supported,
+                  size: 60, color: Colors.white70),
             ),
           Padding(
             padding: const EdgeInsets.all(16),
@@ -101,37 +106,32 @@ class _TourListPageState extends State<TourListPage>
                 Text(
                   tour['nome'] ?? '',
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.apartment, size: 18, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text(empresa),
+                    const Icon(Icons.apartment,
+                        size: 18, color: Colors.white70),
+                    const SizedBox(width: 6),
+                    Text(empresa,
+                        style: const TextStyle(color: Colors.white70)),
                   ],
                 ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on,
-                        size: 18, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text(tour['local'] ?? ''),
-                  ],
-                ),
-                const SizedBox(height: 8),
+
+                const SizedBox(height: 10),
                 Text(
                   "R\$ ${tour['preco'] ?? '0,00'}",
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.blueAccent,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.lightBlueAccent,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -144,13 +144,20 @@ class _TourListPageState extends State<TourListPage>
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[800],
+                      backgroundColor: Colors.blue[400],
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    child: const Text("Ver Detalhes"),
+                    child: const Text(
+                      "Ver Detalhes",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -174,13 +181,13 @@ class _TourListPageState extends State<TourListPage>
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.blue[800],
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+              color: Colors.black.withOpacity(0.25),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
@@ -190,14 +197,14 @@ class _TourListPageState extends State<TourListPage>
               height: 90,
               width: 90,
               decoration: BoxDecoration(
-                color: Colors.blue[100],
+                color: Colors.blue[700],
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(16),
                   bottomLeft: Radius.circular(16),
                 ),
               ),
               alignment: Alignment.center,
-              child: const Icon(Icons.store, size: 40, color: Colors.blue),
+              child: const Icon(Icons.store, size: 40, color: Colors.white),
             ),
             Expanded(
               child: Padding(
@@ -210,6 +217,7 @@ class _TourListPageState extends State<TourListPage>
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -217,20 +225,18 @@ class _TourListPageState extends State<TourListPage>
                       children: const [
                         Icon(Icons.star, color: Colors.amber, size: 18),
                         SizedBox(width: 4),
-                        Text(
-                          "4.8",
-                          style: TextStyle(fontSize: 14),
-                        ),
+                        Text("4.8",
+                            style: TextStyle(color: Colors.white70)),
                         SizedBox(width: 6),
                         Text("• 30-40 min",
-                            style: TextStyle(
-                                color: Colors.grey, fontSize: 13)),
+                            style:
+                                TextStyle(color: Colors.white54, fontSize: 13)),
                       ],
                     ),
                     const SizedBox(height: 6),
                     const Text(
                       "Toque para ver os passeios",
-                      style: TextStyle(color: Colors.grey),
+                      style: TextStyle(color: Colors.white70),
                     ),
                   ],
                 ),
@@ -245,14 +251,20 @@ class _TourListPageState extends State<TourListPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF00008B),
       appBar: AppBar(
-        title: Text(widget.query.isEmpty
-            ? "Explorar"
-            : "Resultados para \"${widget.query}\""),
-        backgroundColor: Colors.blue[800],
+        title: Text(
+          widget.query.isEmpty
+              ? "Explorar Passeios"
+              : "Resultados para \"${widget.query}\"",
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: const Color(0xFF00008B),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
           tabs: const [
             Tab(text: "Passeios"),
             Tab(text: "Empresas"),
@@ -260,7 +272,7 @@ class _TourListPageState extends State<TourListPage>
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: Colors.white))
           : TabBarView(
               controller: _tabController,
               children: [
@@ -268,8 +280,7 @@ class _TourListPageState extends State<TourListPage>
                     ? const Center(
                         child: Text(
                           "Nenhum passeio encontrado!",
-                          style:
-                              TextStyle(fontSize: 16, color: Colors.grey),
+                          style: TextStyle(color: Colors.white70, fontSize: 16),
                         ),
                       )
                     : ListView.builder(
@@ -283,8 +294,7 @@ class _TourListPageState extends State<TourListPage>
                     ? const Center(
                         child: Text(
                           "Nenhuma empresa encontrada!",
-                          style:
-                              TextStyle(fontSize: 16, color: Colors.grey),
+                          style: TextStyle(color: Colors.white70, fontSize: 16),
                         ),
                       )
                     : ListView.builder(
