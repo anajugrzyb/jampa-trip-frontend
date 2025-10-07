@@ -20,7 +20,7 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 7, 
+      version: 8, 
       onCreate: (db, version) async {
         await _createTables(db);
       },
@@ -69,6 +69,19 @@ class DBHelper {
 
         if (oldVersion < 7) {
           await db.execute('ALTER TABLE reservas ADD COLUMN data_reserva TEXT');
+        }
+
+        if (oldVersion < 8) {
+          await db.execute('''
+            CREATE TABLE IF NOT EXISTS cards (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              nome_titular TEXT,
+              numero_cartao TEXT,
+              mes TEXT,
+              ano TEXT,
+              cvv TEXT
+            )
+          ''');
         }
       },
     );
@@ -121,6 +134,17 @@ class DBHelper {
         observacoes TEXT,
         data_reserva TEXT,
         FOREIGN KEY (tour_id) REFERENCES tours (id) ON DELETE CASCADE
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS cards (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome_titular TEXT,
+        numero_cartao TEXT,
+        mes TEXT,
+        ano TEXT,
+        cvv TEXT
       )
     ''');
   }
@@ -215,4 +239,26 @@ class DBHelper {
     if (total == null) return 0;
     return (total is int) ? total : int.tryParse(total.toString()) ?? 0;
   }
+
+  // ===== CARDS =====
+  Future<int> insertCard(Map<String, dynamic> card) async {
+    final dbClient = await db;
+    return await dbClient.insert('cards', card);
+  }
+
+  Future<List<Map<String, dynamic>>> getCards() async {
+    final dbClient = await db;
+    return await dbClient.query('cards', orderBy: 'id DESC');
+  }
+
+  Future<int> deleteCard(int id) async {
+    final dbClient = await db;
+    return await dbClient.delete('cards', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<void> clearAllCards() async {
+    final dbClient = await db;
+    await dbClient.delete('cards');
+  }
 }
+

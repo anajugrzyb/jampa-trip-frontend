@@ -1,12 +1,100 @@
 import 'package:flutter/material.dart';
+import '../data/db_helper.dart';
+import 'payment_page.dart';
 
-class CardRegisterPage extends StatelessWidget {
+class CardRegisterPage extends StatefulWidget {
   const CardRegisterPage({super.key});
+
+  @override
+  State<CardRegisterPage> createState() => _CardRegisterPageState();
+}
+
+class _CardRegisterPageState extends State<CardRegisterPage> {
+  final _holderController = TextEditingController();
+  final _numberController = TextEditingController();
+  final _cvvController = TextEditingController();
+
+  String? _selectedMonth;
+  String? _selectedYear;
+
+  bool _isValidCardNumber(String number) {
+    if (!RegExp(r'^[0-9]{13,19}$').hasMatch(number)) return false;
+
+    int sum = 0;
+    bool alternate = false;
+
+    for (int i = number.length - 1; i >= 0; i--) {
+      int digit = int.parse(number[i]);
+      if (alternate) {
+        digit *= 2;
+        if (digit > 9) digit -= 9;
+      }
+      sum += digit;
+      alternate = !alternate;
+    }
+    return sum % 10 == 0;
+  }
+
+  Future<void> _saveCardToDb() async {
+    final holder = _holderController.text.trim();
+    final number = _numberController.text.trim().replaceAll(' ', '');
+    final cvv = _cvvController.text.trim();
+
+    if (holder.isEmpty ||
+        number.isEmpty ||
+        _selectedMonth == null ||
+        _selectedYear == null ||
+        cvv.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Preencha todos os campos!")),
+      );
+      return;
+    }
+
+    if (!_isValidCardNumber(number)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Número do cartão inválido. Verifique e tente novamente."),
+        ),
+      );
+      return;
+    }
+
+    final isValidCvv = RegExp(r'^[0-9]{3,4}$').hasMatch(cvv);
+    if (!isValidCvv) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("O CVV deve conter 3 ou 4 dígitos numéricos."),
+        ),
+      );
+      return;
+    }
+
+    final db = DBHelper();
+    await db.insertCard({
+      'nome_titular': holder,
+      'numero_cartao': number,
+      'mes': _selectedMonth,
+      'ano': _selectedYear,
+      'cvv': cvv,
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Cartão cadastrado com sucesso!")),
+    );
+
+    Future.delayed(const Duration(milliseconds: 700), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const PaymentScreen()),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF001C92), 
+      backgroundColor: const Color(0xFF001C92),
       appBar: AppBar(
         backgroundColor: const Color(0xFF001C92),
         elevation: 0,
@@ -21,26 +109,27 @@ class CardRegisterPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 10),
             const Text(
               'Insira as informações do cartão',
               style: TextStyle(color: Colors.white, fontSize: 16),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 4),
-      
             const SizedBox(height: 25),
 
             TextField(
+              controller: _holderController,
               style: const TextStyle(color: Colors.white),
               decoration: _inputDecoration('Nome do titular'),
             ),
             const SizedBox(height: 15),
 
             TextField(
+              controller: _numberController,
               style: const TextStyle(color: Colors.white),
               keyboardType: TextInputType.number,
-              decoration: _inputDecoration('Número do cartão'),
+              maxLength: 19,
+              decoration: _inputDecoration('Número do cartão')
+                  .copyWith(counterText: ""),
             ),
             const SizedBox(height: 15),
 
@@ -48,6 +137,7 @@ class CardRegisterPage extends StatelessWidget {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
+                    value: _selectedMonth,
                     dropdownColor: const Color(0xFF001C92),
                     style: const TextStyle(color: Colors.white),
                     decoration: _inputDecoration('Mês'),
@@ -58,12 +148,13 @@ class CardRegisterPage extends StatelessWidget {
                         child: Text((i + 1).toString().padLeft(2, '0')),
                       ),
                     ),
-                    onChanged: (_) {},
+                    onChanged: (val) => setState(() => _selectedMonth = val),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: DropdownButtonFormField<String>(
+                    value: _selectedYear,
                     dropdownColor: const Color(0xFF001C92),
                     style: const TextStyle(color: Colors.white),
                     decoration: _inputDecoration('Ano'),
@@ -74,7 +165,7 @@ class CardRegisterPage extends StatelessWidget {
                         child: Text((2025 + i).toString()),
                       ),
                     ),
-                    onChanged: (_) {},
+                    onChanged: (val) => setState(() => _selectedYear = val),
                   ),
                 ),
               ],
@@ -82,53 +173,28 @@ class CardRegisterPage extends StatelessWidget {
             const SizedBox(height: 15),
 
             TextField(
+              controller: _cvvController,
               style: const TextStyle(color: Colors.white),
               keyboardType: TextInputType.number,
-              decoration: _inputDecoration('CVV', helper: '3 ou 4 dígitos'),
+              maxLength: 4,
+              decoration: _inputDecoration('CVV', helper: '3 ou 4 dígitos')
+                  .copyWith(counterText: ""),
             ),
             const SizedBox(height: 25),
 
-            Row(
-              children: [
-                Switch(
-                  value: true,
-                  onChanged: (_) {},
-                  activeColor: Colors.white,
-                ),
-                const Text(
-                  "Salvar este cartão",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ],
-            ),
-            const SizedBox(height: 25),
-
-            // Botão adicionar
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blueAccent,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                    borderRadius: BorderRadius.circular(12)),
               ),
-              onPressed: () {},
+              onPressed: _saveCardToDb,
               child: const Text(
-                'Adicionar',
+                'Cadastrar',
                 style: TextStyle(fontSize: 16, color: Colors.white),
               ),
             ),
-            const SizedBox(height: 25),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _bottomButton(Icons.home, 'Início', () {}),
-                _bottomButton(Icons.arrow_back, 'Voltar', () {
-                  Navigator.pop(context);
-                }),
-              ],
-            )
           ],
         ),
       ),
@@ -151,19 +217,4 @@ class CardRegisterPage extends StatelessWidget {
       ),
     );
   }
-
-  Widget _bottomButton(IconData icon, String label, VoidCallback onTap) {
-    return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF3355FF),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      onPressed: onTap,
-      icon: Icon(icon, color: Colors.white),
-      label: Text(label, style: const TextStyle(color: Colors.white)),
-    );
-  }
 }
-
