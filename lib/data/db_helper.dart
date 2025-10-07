@@ -20,7 +20,7 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 6, 
+      version: 7, 
       onCreate: (db, version) async {
         await _createTables(db);
       },
@@ -42,9 +42,11 @@ class DBHelper {
             )
           ''');
         }
+
         if (oldVersion < 4) {
           await db.execute('ALTER TABLE tours ADD COLUMN preco REAL DEFAULT 0');
         }
+
         if (oldVersion < 5) {
           await db.execute('''
             CREATE TABLE IF NOT EXISTS reservas (
@@ -55,12 +57,18 @@ class DBHelper {
               endereco TEXT,
               qtd_pessoas INTEGER,
               observacoes TEXT,
+              data_reserva TEXT,
               FOREIGN KEY (tour_id) REFERENCES tours (id) ON DELETE CASCADE
             )
           ''');
         }
+
         if (oldVersion < 6) {
           await db.execute('ALTER TABLE tours ADD COLUMN empresa TEXT');
+        }
+
+        if (oldVersion < 7) {
+          await db.execute('ALTER TABLE reservas ADD COLUMN data_reserva TEXT');
         }
       },
     );
@@ -111,12 +119,13 @@ class DBHelper {
         endereco TEXT,
         qtd_pessoas INTEGER,
         observacoes TEXT,
+        data_reserva TEXT,
         FOREIGN KEY (tour_id) REFERENCES tours (id) ON DELETE CASCADE
       )
     ''');
   }
 
-  // ===== Users =====
+  // ===== USERS =====
   Future<int> insertUser(Map<String, dynamic> user) async {
     var dbClient = await db;
     return await dbClient.insert('users', user);
@@ -132,7 +141,7 @@ class DBHelper {
     return result.isNotEmpty ? result.first : null;
   }
 
-  // ===== Companies =====
+  // ===== COMPANIES =====
   Future<int> insertCompany(Map<String, dynamic> company) async {
     var dbClient = await db;
     return await dbClient.insert('companies', company);
@@ -148,7 +157,7 @@ class DBHelper {
     return result.isNotEmpty ? result.first : null;
   }
 
-  // ===== Tours =====
+  // ===== TOURS =====
   Future<int> insertTour(Map<String, dynamic> tour) async {
     var dbClient = await db;
     return await dbClient.insert('tours', tour);
@@ -179,7 +188,7 @@ class DBHelper {
     return await dbClient.delete('tours', where: 'id = ?', whereArgs: [id]);
   }
 
-  // ===== Reservas =====
+  // ===== RESERVAS =====
   Future<int> insertReserva(Map<String, dynamic> reserva) async {
     var dbClient = await db;
     return await dbClient.insert('reservas', reserva);
@@ -193,5 +202,17 @@ class DBHelper {
   Future<int> deleteReserva(int id) async {
     var dbClient = await db;
     return await dbClient.delete('reservas', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<int> getTotalReservasPorData(int tourId, String data) async {
+    final dbClient = await db;
+    final result = await dbClient.rawQuery('''
+      SELECT SUM(qtd_pessoas) as total FROM reservas 
+      WHERE tour_id = ? AND data_reserva = ?
+    ''', [tourId, data]);
+
+    final total = result.first['total'];
+    if (total == null) return 0;
+    return (total is int) ? total : int.tryParse(total.toString()) ?? 0;
   }
 }

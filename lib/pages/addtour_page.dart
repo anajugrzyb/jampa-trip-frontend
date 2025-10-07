@@ -9,12 +9,12 @@ import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 
 class AddTourPage extends StatefulWidget {
   final Map<String, dynamic>? tourToEdit;
-  final String userName; 
+  final String userName;
 
   const AddTourPage({
     super.key,
     this.tourToEdit,
-    required this.userName, 
+    required this.userName,
   });
 
   @override
@@ -23,13 +23,13 @@ class AddTourPage extends StatefulWidget {
 
 class _AddTourPageState extends State<AddTourPage> {
   final _nomeController = TextEditingController();
-  final _dataController = TextEditingController();
   final _saidaController = TextEditingController();
   final _chegadaController = TextEditingController();
   final _infoController = TextEditingController();
   final _precoController = TextEditingController();
 
   int? _qtdPessoas;
+  List<DateTime> _datasSelecionadas = [];
   List<String> _imagens = [];
   final ImagePicker _picker = ImagePicker();
 
@@ -44,12 +44,19 @@ class _AddTourPageState extends State<AddTourPage> {
     if (widget.tourToEdit != null) {
       final tour = widget.tourToEdit!;
       _nomeController.text = tour['nome'] ?? '';
-      _dataController.text = tour['datas'] ?? '';
       _saidaController.text = tour['saida'] ?? '';
       _chegadaController.text = tour['chegada'] ?? '';
       _infoController.text = tour['info'] ?? '';
       _qtdPessoas = int.tryParse(tour['qtd_pessoas'] ?? '0');
       _imagens = (tour['imagens'] as String?)?.split(',') ?? [];
+
+      if (tour['datas'] != null && tour['datas'].toString().isNotEmpty) {
+        _datasSelecionadas = tour['datas']
+            .toString()
+            .split(',')
+            .map((s) => DateFormat('dd/MM/yyyy').parse(s.trim()))
+            .toList();
+      }
 
       if (tour['preco'] != null) {
         double preco = tour['preco'] is String
@@ -67,46 +74,61 @@ class _AddTourPageState extends State<AddTourPage> {
   }
 
   Future<void> _selecionarData() async {
-    DateTime selectedDate = DateTime.now();
-
     await showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Selecione a data"),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: TableCalendar(
-            locale: 'pt_BR',
-            firstDay: DateTime(2023),
-            lastDay: DateTime(2100),
-            focusedDay: selectedDate,
-            selectedDayPredicate: (day) => isSameDay(selectedDate, day),
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                selectedDate = selectedDay;
-                _dataController.text =
-                    DateFormat('dd/MM/yyyy').format(selectedDate);
-              });
-              Navigator.pop(context);
-            },
-            calendarStyle: const CalendarStyle(
-              todayDecoration: BoxDecoration(
-                color: Colors.blue,
-                shape: BoxShape.circle,
+      builder: (_) {
+        DateTime focusedDay = DateTime.now();
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return AlertDialog(
+              title: const Text("Selecione as datas disponíveis"),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: TableCalendar(
+                  locale: 'pt_BR',
+                  firstDay: DateTime(2023),
+                  lastDay: DateTime(2100),
+                  focusedDay: focusedDay,
+                  selectedDayPredicate: (day) {
+                    return _datasSelecionadas.any((d) => isSameDay(d, day));
+                  },
+                  onDaySelected: (selectedDay, _) {
+                    setModalState(() {
+                      if (_datasSelecionadas.any((d) => isSameDay(d, selectedDay))) {
+                        _datasSelecionadas.removeWhere((d) => isSameDay(d, selectedDay));
+                      } else {
+                        _datasSelecionadas.add(selectedDay);
+                      }
+                    });
+                  },
+                  calendarStyle: const CalendarStyle(
+                    todayDecoration: BoxDecoration(
+                      color: Colors.blue,
+                      shape: BoxShape.circle,
+                    ),
+                    selectedDecoration: BoxDecoration(
+                      color: Colors.lightBlue,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  headerStyle: const HeaderStyle(
+                    formatButtonVisible: false,
+                    titleCentered: true,
+                  ),
+                ),
               ),
-              selectedDecoration: BoxDecoration(
-                color: Colors.lightBlue,
-                shape: BoxShape.circle,
-              ),
-            ),
-            headerStyle: const HeaderStyle(
-              formatButtonVisible: false,
-              titleCentered: true,
-            ),
-          ),
-        ),
-      ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Concluir"),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
+    setState(() {});
   }
 
   Future<void> _selecionarHora(TextEditingController controller) async {
@@ -118,10 +140,8 @@ class _AddTourPageState extends State<AddTourPage> {
           height: 180,
           child: TimePickerSpinner(
             is24HourMode: true,
-            normalTextStyle:
-                const TextStyle(fontSize: 18, color: Colors.black54),
-            highlightedTextStyle:
-                const TextStyle(fontSize: 22, color: Colors.black),
+            normalTextStyle: const TextStyle(fontSize: 18, color: Colors.black54),
+            highlightedTextStyle: const TextStyle(fontSize: 22, color: Colors.black),
             spacing: 50,
             itemHeight: 60,
             onTimeChange: (time) {
@@ -158,14 +178,16 @@ class _AddTourPageState extends State<AddTourPage> {
 
     final tour = {
       'nome': _nomeController.text.trim(),
-      'datas': _dataController.text.trim(),
+      'datas': _datasSelecionadas
+          .map((d) => DateFormat('dd/MM/yyyy').format(d))
+          .join(', '), 
       'saida': _saidaController.text.trim(),
       'chegada': _chegadaController.text.trim(),
       'info': _infoController.text.trim(),
       'qtd_pessoas': _qtdPessoas?.toString() ?? '0',
       'imagens': _imagens.join(','),
       'preco': double.tryParse(precoFormatado) ?? 0.0,
-      'empresa': widget.userName, 
+      'empresa': widget.userName,
     };
 
     final db = DBHelper();
@@ -224,10 +246,24 @@ class _AddTourPageState extends State<AddTourPage> {
 
             GestureDetector(
               onTap: _selecionarData,
-              child: AbsorbPointer(
-                child: _buildStyledField("Datas disponíveis", _dataController),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                margin: const EdgeInsets.symmetric(vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.blue[800],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  _datasSelecionadas.isEmpty
+                      ? "Selecione as datas disponíveis"
+                      : _datasSelecionadas
+                          .map((d) => DateFormat('dd/MM/yyyy').format(d))
+                          .join(', '),
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
             ),
+
             GestureDetector(
               onTap: () => _selecionarHora(_saidaController),
               child: AbsorbPointer(
@@ -241,6 +277,7 @@ class _AddTourPageState extends State<AddTourPage> {
               ),
             ),
             const SizedBox(height: 8),
+
             Row(
               children: [
                 Expanded(

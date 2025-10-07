@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'reservation_page.dart'; 
+import 'reservation_page.dart';
 
 class AdViewPage extends StatelessWidget {
   final Map<String, dynamic> tour;
@@ -27,23 +27,27 @@ class AdViewPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         alignment: Alignment.center,
-        child: const Icon(Icons.image_not_supported, size: 60, color: Colors.white),
+        child: const Icon(Icons.image_not_supported,
+            size: 60, color: Colors.white),
       );
     }
   }
 
   Widget _buildInfoRow(IconData icon, String label, String? value) {
-    return Row(
-      children: [
-        Icon(icon, color: Colors.blue[700]),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            "$label: ${value ?? '-'}",
-            style: const TextStyle(fontSize: 16),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.blue[700]),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              "$label: ${value ?? '-'}",
+              style: const TextStyle(fontSize: 16, color: Colors.black87),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -52,22 +56,22 @@ class AdViewPage extends StatelessWidget {
     final imagens = (tour['imagens'] as String?)?.split(',') ?? [];
 
     return Scaffold(
-      backgroundColor: Colors.blue[50],
+      backgroundColor: const Color(0xFF00008B),
       appBar: AppBar(
         title: Text(
-          tour['nome'] ?? "Detalhes",
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          tour['nome'] ?? "Detalhes do Passeio",
+          style: const TextStyle(color: Colors.white),
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.blue[800],
+        backgroundColor: const Color(0xFF00008B),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Carrossel de imagens
             if (imagens.isNotEmpty)
               SizedBox(
                 height: 220,
@@ -84,50 +88,57 @@ class AdViewPage extends StatelessWidget {
               ),
             const SizedBox(height: 20),
 
-            // Nome do passeio
-            Text(
-              tour['nome'] ?? '',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue[900],
-              ),
-            ),
-            const SizedBox(height: 12),
-
             Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              elevation: 3,
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 4,
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(18),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildInfoRow(Icons.calendar_today, "Datas disponíveis", tour['datas']),
-                    const SizedBox(height: 10),
+                    Text(
+                      tour['nome'] ?? '',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue[900],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
                     _buildInfoRow(Icons.departure_board, "Saída", tour['saida']),
-                    const SizedBox(height: 10),
                     _buildInfoRow(Icons.flag, "Chegada", tour['chegada']),
-                    const SizedBox(height: 10),
-                    _buildInfoRow(Icons.people, "Qtd pessoas", tour['qtd_pessoas']),
+                    _buildInfoRow(
+                        Icons.people, "Qtd pessoas", tour['qtd_pessoas']),
+                    const Divider(height: 24, thickness: 1),
+
+                    Row(
+                      children: [
+                        const Icon(Icons.attach_money,
+                            color: Colors.green, size: 22),
+                        const SizedBox(width: 6),
+                        Text(
+                          "Preço: R\$ ${tour['preco']?.toStringAsFixed(2) ?? '0,00'}",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    Text(
+                      tour['info'] ?? "Sem informações adicionais.",
+                      style: const TextStyle(fontSize: 16, height: 1.5),
+                    ),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-
-            Text(
-              "Preço: R\$ ${tour['preco']?.toStringAsFixed(2) ?? '0,00'}",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue[800],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            Text(
-              tour['info'] ?? "Sem informações adicionais.",
-              style: const TextStyle(fontSize: 16, height: 1.5),
             ),
             const SizedBox(height: 30),
 
@@ -143,17 +154,22 @@ class AdViewPage extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[800],
+                  backgroundColor: Colors.blue[400],
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   elevation: 5,
                 ),
-                icon: const Icon(Icons.shopping_cart_checkout, size: 22),
+                icon: const Icon(Icons.shopping_cart_checkout,
+                    size: 22, color: Colors.white),
                 label: const Text(
                   "Reservar Passeio",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
