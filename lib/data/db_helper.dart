@@ -20,7 +20,7 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 5, 
+      version: 6, 
       onCreate: (db, version) async {
         await _createTables(db);
       },
@@ -37,7 +37,8 @@ class DBHelper {
               qtd_pessoas TEXT,
               info TEXT,
               imagens TEXT,
-              preco REAL DEFAULT 0
+              preco REAL DEFAULT 0,
+              empresa TEXT
             )
           ''');
         }
@@ -57,6 +58,9 @@ class DBHelper {
               FOREIGN KEY (tour_id) REFERENCES tours (id) ON DELETE CASCADE
             )
           ''');
+        }
+        if (oldVersion < 6) {
+          await db.execute('ALTER TABLE tours ADD COLUMN empresa TEXT');
         }
       },
     );
@@ -93,7 +97,8 @@ class DBHelper {
         qtd_pessoas TEXT,
         info TEXT,
         imagens TEXT,
-        preco REAL DEFAULT 0
+        preco REAL DEFAULT 0,
+        empresa TEXT
       )
     ''');
 
@@ -149,8 +154,18 @@ class DBHelper {
     return await dbClient.insert('tours', tour);
   }
 
-  Future<List<Map<String, dynamic>>> getTours() async {
+  Future<List<Map<String, dynamic>>> getTours({String? empresa}) async {
     var dbClient = await db;
+
+    if (empresa != null) {
+      return await dbClient.query(
+        'tours',
+        where: 'empresa = ?',
+        whereArgs: [empresa],
+        orderBy: 'id DESC',
+      );
+    }
+
     return await dbClient.query('tours', orderBy: 'id DESC');
   }
 

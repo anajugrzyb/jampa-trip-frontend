@@ -9,8 +9,13 @@ import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 
 class AddTourPage extends StatefulWidget {
   final Map<String, dynamic>? tourToEdit;
+  final String userName; 
 
-  const AddTourPage({super.key, this.tourToEdit});
+  const AddTourPage({
+    super.key,
+    this.tourToEdit,
+    required this.userName, 
+  });
 
   @override
   State<AddTourPage> createState() => _AddTourPageState();
@@ -46,7 +51,6 @@ class _AddTourPageState extends State<AddTourPage> {
       _qtdPessoas = int.tryParse(tour['qtd_pessoas'] ?? '0');
       _imagens = (tour['imagens'] as String?)?.split(',') ?? [];
 
-      // já mostra o preço formatado
       if (tour['preco'] != null) {
         double preco = tour['preco'] is String
             ? double.tryParse(tour['preco']) ?? 0.0
@@ -161,6 +165,7 @@ class _AddTourPageState extends State<AddTourPage> {
       'qtd_pessoas': _qtdPessoas?.toString() ?? '0',
       'imagens': _imagens.join(','),
       'preco': double.tryParse(precoFormatado) ?? 0.0,
+      'empresa': widget.userName, 
     };
 
     final db = DBHelper();
