@@ -142,10 +142,10 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                   onPressed: _registerCompany,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4169E1),
-                    foregroundColor: Colors.white, // texto branco
+                    foregroundColor: Colors.white, 
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8), // 🔥 cantos arredondados
+                      borderRadius: BorderRadius.circular(8), 
                     ),
                   ),
                   child: const Text(

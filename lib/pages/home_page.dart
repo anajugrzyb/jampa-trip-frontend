@@ -13,7 +13,6 @@ class HomePage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Cabeçalho
             Container(
               width: double.infinity,
               color: const Color(0xFF000080),
@@ -37,7 +36,6 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            // Barra de pesquisa
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
@@ -62,7 +60,6 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            // Conteúdo principal
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -99,7 +96,6 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            // Rodapé
             Container(
               color: const Color(0xFF000080),
               padding: const EdgeInsets.symmetric(vertical: 8),
@@ -138,7 +134,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // Widgets auxiliares
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
