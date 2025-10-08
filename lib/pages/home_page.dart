@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'account_page.dart';
-import 'tourlist_page.dart'; 
+import 'tourlist_page.dart';
 
 class HomePage extends StatelessWidget {
-  final String userName; 
-  const HomePage({super.key, required this.userName});
+  final String userName;
+  final String userEmail; 
+
+  const HomePage({
+    super.key,
+    required this.userName,
+    required this.userEmail,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +27,8 @@ class HomePage extends StatelessWidget {
                 children: [
                   const CircleAvatar(
                     radius: 40,
-                    backgroundImage: AssetImage("lib/assets/images/profile.png"), 
+                    backgroundImage:
+                        AssetImage("lib/assets/images/profile.png"),
                   ),
                   const SizedBox(height: 10),
                   Text(
@@ -44,7 +51,8 @@ class HomePage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => TourListPage(query: value.trim()),
+                        builder: (context) =>
+                            TourListPage(query: value.trim()),
                       ),
                     );
                   }
@@ -55,7 +63,8 @@ class HomePage extends StatelessWidget {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20),
                 ),
               ),
             ),
@@ -67,26 +76,43 @@ class HomePage extends StatelessWidget {
                   children: [
                     _buildSectionTitle("Destaques do dia"),
                     _buildHorizontalList([
-                      {"img": "lib/assets/images/coqueirinho.jpeg", "title": "Praia de Coqueirinho"},
-                      {"img": "lib/assets/images/letreiro.jpeg", "title": "Pacote c/ desconto"},
-                      {"img": "lib/assets/images/centrojoaopessoa.jpeg", "title": "Centro Histórico"},
+                      {
+                        "img": "lib/assets/images/coqueirinho.jpeg",
+                        "title": "Praia de Coqueirinho"
+                      },
+                      {
+                        "img": "lib/assets/images/letreiro.jpeg",
+                        "title": "Pacote c/ desconto"
+                      },
+                      {
+                        "img": "lib/assets/images/centrojoaopessoa.jpeg",
+                        "title": "Centro Histórico"
+                      },
                     ]),
 
                     _buildSectionTitle("Lugares populares perto de você"),
                     _buildHorizontalList([
-                      {"img": "lib/assets/images/tambaba.jpeg", "title": "Praia de Tambaba"},
-                      {"img": "lib/assets/images/piscinasnaturais.jpeg", "title": "Piscinas Naturais"},
+                      {
+                        "img": "lib/assets/images/tambaba.jpeg",
+                        "title": "Praia de Tambaba"
+                      },
+                      {
+                        "img": "lib/assets/images/piscinasnaturais.jpeg",
+                        "title": "Piscinas Naturais"
+                      },
                     ]),
 
                     _buildSectionTitle("Categorias"),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: const [
                           _CategoryIcon(icon: Icons.tour, label: "Passeios"),
                           _CategoryIcon(icon: Icons.hotel, label: "Hospedagem"),
-                          _CategoryIcon(icon: Icons.restaurant, label: "Restaurantes"),
+                          _CategoryIcon(
+                              icon: Icons.restaurant, label: "Restaurantes"),
                           _CategoryIcon(icon: Icons.park, label: "Trilhas"),
                         ],
                       ),
@@ -115,7 +141,10 @@ class HomePage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AccountPage(userName: userName), 
+                          builder: (context) => AccountPage(
+                            userName: userName,
+                            userEmail: userEmail,
+                          ),
                         ),
                       );
                     },
@@ -175,7 +204,7 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [Colors.black54, Colors.transparent],
@@ -183,7 +212,10 @@ class HomePage extends StatelessWidget {
               ),
               child: Text(
                 item["title"]!,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           );

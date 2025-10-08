@@ -38,7 +38,7 @@ class _MyToursPageState extends State<MyToursPage> {
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           "Meus Passeios",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(fontFamily: 'Poppins', color: Colors.white),
         ),
         centerTitle: true,
       ),

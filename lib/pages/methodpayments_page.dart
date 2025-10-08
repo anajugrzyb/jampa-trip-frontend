@@ -15,7 +15,7 @@ class MetodoPagamentoPage extends StatelessWidget {
         centerTitle: true,
         title: const Text(
           "Métodos de pagamento",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(fontFamily: 'Poppins', color: Colors.white),
         ),
       ),
       body: Column(

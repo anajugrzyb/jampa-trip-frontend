@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'payment_page.dart';  
 import 'login_page.dart';
+import 'informationuser_page.dart';
 
 class AccountPage extends StatelessWidget {
   final String userName;
+  final String userEmail;
 
-  const AccountPage({super.key, required this.userName});
+  const AccountPage({super.key, required this.userName, required this.userEmail});
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +78,14 @@ class AccountPage extends StatelessWidget {
                       icon: Icons.person,
                       title: "Login",
                       subtitle: "Informações de login",
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => InformationUserPage(email: userEmail),
+                          ),
+                        );
+                      },
                     ),
                     _buildMenuItem(
                       icon: Icons.payment,

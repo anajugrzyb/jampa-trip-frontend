@@ -70,7 +70,12 @@ class _RegisterPageState extends State<RegisterPage> {
               TextField(
                 controller: nameController,
                 decoration:  InputDecoration(
-                  hintText: "Digite seu nome completo",
+                  labelText: "Digite seu nome completo",
+                  labelStyle: const TextStyle(
+                          fontFamily: 'Poppins',
+                          color: const Color.fromARGB(255, 90, 124, 225),
+                          fontWeight: FontWeight.bold,
+                        ),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -84,7 +89,12 @@ class _RegisterPageState extends State<RegisterPage> {
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
-                  hintText: "Digite seu e-mail",
+                  labelText: "Digite seu e-mail",
+                  labelStyle: const TextStyle(
+                          fontFamily: 'Poppins',
+                          color: const Color.fromARGB(255, 90, 124, 225),
+                          fontWeight: FontWeight.bold,
+                        ),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -98,7 +108,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  hintText: "Digite sua senha",
+                  labelText: "Digite sua senha",
+                  labelStyle: const TextStyle(
+                          fontFamily: 'Poppins',
+                          color: const Color.fromARGB(255, 90, 124, 225),
+                          fontWeight: FontWeight.bold,
+                        ),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -112,7 +127,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: confirmPasswordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  hintText: "Confirme sua senha",
+                  labelText: "Confirme sua senha",
+                  labelStyle: const TextStyle(
+                          fontFamily: 'Poppins',
+                          color: const Color.fromARGB(255, 90, 124, 225),
+                          fontWeight: FontWeight.bold,
+                        ),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(

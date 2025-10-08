@@ -76,7 +76,12 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
               TextField(
                 controller: companyNameController,
                 decoration: InputDecoration(
-                  hintText: "Nome da empresa",
+                  labelText: "Nome da empresa",
+                  labelStyle: const TextStyle(
+                          fontFamily: 'Poppins', 
+                          color: const Color.fromARGB(255, 90, 124, 225),
+                          fontWeight: FontWeight.bold,
+                        ),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -88,7 +93,12 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
               TextField(
                 controller: cnpjController,
                 decoration: InputDecoration(
-                  hintText: "CNPJ",
+                  labelText: "CNPJ",
+                  labelStyle: const TextStyle(
+                          fontFamily: 'Poppins', 
+                          color: const Color.fromARGB(255, 90, 124, 225),
+                          fontWeight: FontWeight.bold,
+                        ),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -101,7 +111,12 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
-                  hintText: "E-mail da empresa",
+                  labelText: "E-mail da empresa",
+                  labelStyle: const TextStyle(
+                          fontFamily: 'Poppins',
+                          color: const Color.fromARGB(255, 90, 124, 225),
+                          fontWeight: FontWeight.bold,
+                        ),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -114,7 +129,12 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 controller: passwordController,
                 obscureText: true,
                 decoration:  InputDecoration(
-                  hintText: "Senha",
+                  labelText: "Senha",
+                  labelStyle: const TextStyle(
+                          fontFamily: 'Poppins',
+                          color: const Color.fromARGB(255, 90, 124, 225),
+                          fontWeight: FontWeight.bold,
+                        ),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -127,7 +147,12 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 controller: confirmPasswordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  hintText: "Confirme a senha",
+                  labelText: "Confirme a senha",
+                  labelStyle: const TextStyle(
+                          fontFamily: 'Poppins',
+                          color: const Color.fromARGB(255, 90, 124, 225),
+                          fontWeight: FontWeight.bold,
+                        ),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(

@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(userName: user['name']),
+          builder: (context) => HomePage(userName: user['name'],  userEmail: user['email'],),
         ),
       );
       return;
@@ -86,6 +86,11 @@ class _LoginPageState extends State<LoginPage> {
                 style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   labelText: "Digite seu email",
+                  labelStyle: const TextStyle(
+                          fontFamily: 'Poppins', 
+                          color: const Color.fromARGB(255, 90, 124, 225),
+                          fontWeight: FontWeight.bold,
+                        ),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -100,6 +105,11 @@ class _LoginPageState extends State<LoginPage> {
                 style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   labelText: "Digite sua senha",
+                  labelStyle: const TextStyle(
+                          fontFamily: 'Poppins',
+                          color: const Color.fromARGB(255, 90, 124, 225),
+                          fontWeight: FontWeight.bold,
+                        ),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
