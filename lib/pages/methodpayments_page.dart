@@ -15,7 +15,7 @@ class MetodoPagamentoPage extends StatelessWidget {
         centerTitle: true,
         title: const Text(
           "Métodos de pagamento",
-          style: TextStyle(fontFamily: 'Poppins', color: Colors.white),
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
       body: Column(
@@ -28,20 +28,6 @@ class MetodoPagamentoPage extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _botaoFooter("Início", Icons.home, () {
-                  Navigator.pop(context);
-                }),
-                _botaoFooter("Voltar", Icons.arrow_back, () {
-                  Navigator.pop(context);
-                }),
-              ],
-            ),
-          )
         ],
       ),
     );
@@ -57,7 +43,7 @@ class MetodoPagamentoPage extends StatelessWidget {
       child: ListTile(
         leading: Image.asset(iconPath, width: 40, height: 40),
         title: Text(nome, style: const TextStyle(color: Colors.white, fontSize: 18)),
-        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+        trailing: const Icon(Icons.arrow_back, color: Colors.white),
         onTap: () {
           if (nome == "Pix") {
             Navigator.push(

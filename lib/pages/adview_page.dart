@@ -101,7 +101,7 @@ class AdViewPage extends StatelessWidget {
                   children: [
                     Text(
                       tour['nome'] ?? '',
-                      style: TextStyle(
+                      style: TextStyle( 
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.blue[900],
@@ -166,7 +166,7 @@ class AdViewPage extends StatelessWidget {
                 label: const Text(
                   "Reservar Passeio",
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),

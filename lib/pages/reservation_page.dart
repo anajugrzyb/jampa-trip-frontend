@@ -99,7 +99,7 @@ class _ReservationPageState extends State<ReservationPage> {
                 if (_dataSelecionada == null) return false;
                 final dataFormatada = DateFormat('dd/MM/yyyy').format(day);
                 return dataFormatada == _dataSelecionada;
-              },
+              },  
               enabledDayPredicate: (day) {
                 final dataStr = DateFormat('dd/MM/yyyy').format(day);
                 return _datasDisponiveis.contains(dataStr) &&
@@ -231,7 +231,7 @@ class _ReservationPageState extends State<ReservationPage> {
       appBar: AppBar(
         title: const Text(
           "Reservar Passeio",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
         backgroundColor: const Color(0xFF00008B),
         elevation: 0,

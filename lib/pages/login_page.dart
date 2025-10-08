@@ -71,7 +71,6 @@ class _LoginPageState extends State<LoginPage> {
               const Text(
                 "Seja bem-vindo(a)!",
                 style: TextStyle(
-                  fontFamily: 'Poppins',
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -87,7 +86,6 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   labelText: "Digite seu email",
                   labelStyle: const TextStyle(
-                          fontFamily: 'Poppins', 
                           color: const Color.fromARGB(255, 90, 124, 225),
                           fontWeight: FontWeight.bold,
                         ),
@@ -106,7 +104,6 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   labelText: "Digite sua senha",
                   labelStyle: const TextStyle(
-                          fontFamily: 'Poppins',
                           color: const Color.fromARGB(255, 90, 124, 225),
                           fontWeight: FontWeight.bold,
                         ),

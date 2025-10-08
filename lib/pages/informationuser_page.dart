@@ -65,7 +65,6 @@ class _InformationUserPageState extends State<InformationUserPage> {
         content: Text(
           'Informações atualizadas com sucesso!',
           style: TextStyle(
-            fontFamily: 'Poppins',
             color: Colors.white,
           ),
         ),
@@ -80,7 +79,8 @@ class _InformationUserPageState extends State<InformationUserPage> {
       backgroundColor: const Color(0xFF000080),
       appBar: AppBar(
         title: const Text("Informações do Usuário", 
-        style: TextStyle(fontFamily: 'Poppins', color: Colors.white)),
+        style: TextStyle(
+           color: Colors.white, fontSize: 16)),
         backgroundColor: const Color(0xFF4169E1),
         elevation: 0,
       ),
@@ -95,7 +95,6 @@ class _InformationUserPageState extends State<InformationUserPage> {
                     const Text(
                       "Atualize suas informações",
                       style: TextStyle(
-                        fontFamily: 'Poppins',
                         fontSize: 20,
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -109,7 +108,6 @@ class _InformationUserPageState extends State<InformationUserPage> {
                       decoration: InputDecoration(
                         labelText: "Nome completo",
                         labelStyle: const TextStyle(
-                          fontFamily: 'Poppins', 
                           color: Color.fromARGB(255, 90, 124, 225),
                           fontWeight: FontWeight.bold,
                         ),
@@ -132,7 +130,6 @@ class _InformationUserPageState extends State<InformationUserPage> {
                       decoration: InputDecoration(
                         labelText: "Email",
                         labelStyle: const TextStyle(
-                          fontFamily: 'Poppins',
                           color: const Color.fromARGB(255, 90, 124, 225),
                           fontWeight: FontWeight.bold,
                         ),
@@ -154,7 +151,6 @@ class _InformationUserPageState extends State<InformationUserPage> {
                       decoration: InputDecoration(
                         labelText: "Senha",
                         labelStyle: const TextStyle(
-                          fontFamily: 'Poppins', 
                           color: const Color.fromARGB(255, 90, 124, 225),
                           fontWeight: FontWeight.bold,
                         ),

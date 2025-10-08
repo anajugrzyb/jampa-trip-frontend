@@ -140,8 +140,8 @@ class _AddTourPageState extends State<AddTourPage> {
           height: 180,
           child: TimePickerSpinner(
             is24HourMode: true,
-            normalTextStyle: const TextStyle(fontSize: 18, color: Colors.black54),
-            highlightedTextStyle: const TextStyle(fontSize: 22, color: Colors.black),
+            normalTextStyle: const TextStyle( fontSize: 18, color: Colors.black54),
+            highlightedTextStyle: const TextStyle( fontSize: 22, color: Colors.black),
             spacing: 50,
             itemHeight: 60,
             onTimeChange: (time) {
@@ -213,7 +213,7 @@ class _AddTourPageState extends State<AddTourPage> {
       appBar: AppBar(
         title: Text(
           widget.tourToEdit != null ? "Editar Passeio" : "Cadastrar Passeio",
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white, fontSize: 16),
         ),
         backgroundColor: const Color(0xFF00008B),
         elevation: 0,
@@ -338,7 +338,7 @@ class _AddTourPageState extends State<AddTourPage> {
             const Center(
               child: Text(
                 "Para continuar aceite os Termos",
-                style: TextStyle(color: Colors.white70, fontSize: 12),
+                style: TextStyle(color: Colors.white, fontSize: 12),
               ),
             ),
           ],
@@ -364,7 +364,7 @@ class _AddTourPageState extends State<AddTourPage> {
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       hintText: label,
-      hintStyle: const TextStyle(color: Colors.white70),
+      hintStyle: const TextStyle(color: Colors.white),
       filled: true,
       fillColor: Colors.blue[800],
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),

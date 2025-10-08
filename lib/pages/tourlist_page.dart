@@ -96,7 +96,7 @@ class _TourListPageState extends State<TourListPage>
               ),
               alignment: Alignment.center,
               child: const Icon(Icons.image_not_supported,
-                  size: 60, color: Colors.white70),
+                  size: 60, color: Colors.white),
             ),
           Padding(
             padding: const EdgeInsets.all(16),
@@ -115,10 +115,10 @@ class _TourListPageState extends State<TourListPage>
                 Row(
                   children: [
                     const Icon(Icons.apartment,
-                        size: 18, color: Colors.white70),
+                        size: 18, color: Colors.white),
                     const SizedBox(width: 6),
                     Text(empresa,
-                        style: const TextStyle(color: Colors.white70)),
+                        style: const TextStyle(color: Colors.white)),
                   ],
                 ),
 
@@ -226,17 +226,14 @@ class _TourListPageState extends State<TourListPage>
                         Icon(Icons.star, color: Colors.amber, size: 18),
                         SizedBox(width: 4),
                         Text("4.8",
-                            style: TextStyle(color: Colors.white70)),
+                            style: TextStyle(color: Colors.white)),
                         SizedBox(width: 6),
-                        Text("• 30-40 min",
-                            style:
-                                TextStyle(color: Colors.white54, fontSize: 13)),
                       ],
                     ),
                     const SizedBox(height: 6),
                     const Text(
                       "Toque para ver os passeios",
-                      style: TextStyle(color: Colors.white70),
+                      style: TextStyle(color: Colors.white),
                     ),
                   ],
                 ),
@@ -257,17 +254,35 @@ class _TourListPageState extends State<TourListPage>
           widget.query.isEmpty
               ? "Explorar Passeios"
               : "Resultados para \"${widget.query}\"",
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white, fontSize: 18),
         ),
         backgroundColor: const Color(0xFF00008B),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
           labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
+          unselectedLabelColor: Colors.white,
           tabs: const [
-            Tab(text: "Passeios"),
-            Tab(text: "Empresas"),
+            Tab(
+              child: Text(
+                "Passeios",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white, 
+                ),
+              ),
+            ),
+            Tab(
+              child: Text(
+                "Empresas",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -280,7 +295,7 @@ class _TourListPageState extends State<TourListPage>
                     ? const Center(
                         child: Text(
                           "Nenhum passeio encontrado!",
-                          style: TextStyle(color: Colors.white70, fontSize: 16),
+                          style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                       )
                     : ListView.builder(
@@ -294,7 +309,7 @@ class _TourListPageState extends State<TourListPage>
                     ? const Center(
                         child: Text(
                           "Nenhuma empresa encontrada!",
-                          style: TextStyle(color: Colors.white70, fontSize: 16),
+                          style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                       )
                     : ListView.builder(

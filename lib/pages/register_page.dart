@@ -59,7 +59,6 @@ class _RegisterPageState extends State<RegisterPage> {
               const Text(
                 "Seja bem vindo (a)!",
                 style: TextStyle(
-                  fontFamily: 'Poppins',
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -72,7 +71,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 decoration:  InputDecoration(
                   labelText: "Digite seu nome completo",
                   labelStyle: const TextStyle(
-                          fontFamily: 'Poppins',
                           color: const Color.fromARGB(255, 90, 124, 225),
                           fontWeight: FontWeight.bold,
                         ),
@@ -91,7 +89,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 decoration: InputDecoration(
                   labelText: "Digite seu e-mail",
                   labelStyle: const TextStyle(
-                          fontFamily: 'Poppins',
                           color: const Color.fromARGB(255, 90, 124, 225),
                           fontWeight: FontWeight.bold,
                         ),
@@ -110,7 +107,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 decoration: InputDecoration(
                   labelText: "Digite sua senha",
                   labelStyle: const TextStyle(
-                          fontFamily: 'Poppins',
                           color: const Color.fromARGB(255, 90, 124, 225),
                           fontWeight: FontWeight.bold,
                         ),
@@ -129,7 +125,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 decoration: InputDecoration(
                   labelText: "Confirme sua senha",
                   labelStyle: const TextStyle(
-                          fontFamily: 'Poppins',
                           color: const Color.fromARGB(255, 90, 124, 225),
                           fontWeight: FontWeight.bold,
                         ),
@@ -157,7 +152,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: const Text(
                     "Cadastrar",
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

@@ -131,7 +131,7 @@ class HomePage extends StatelessWidget {
                   ElevatedButton.icon(
                     onPressed: () {},
                     icon: const Icon(Icons.home, color: Colors.white),
-                    label: const Text("Início"),
+                    label: const Text("Início", style: TextStyle(color: Colors.white),),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0000CD),
                     ),
@@ -149,7 +149,7 @@ class HomePage extends StatelessWidget {
                       );
                     },
                     icon: const Icon(Icons.person, color: Colors.white),
-                    label: const Text("Perfil"),
+                    label: const Text("Perfil", style: TextStyle(color: Colors.white),),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0000CD),
                     ),
@@ -174,7 +174,7 @@ class HomePage extends StatelessWidget {
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
-          const Icon(Icons.arrow_forward_ios, size: 16),
+          const Icon(Icons.arrow_back, size: 16, color: Colors.white),
         ],
       ),
     );

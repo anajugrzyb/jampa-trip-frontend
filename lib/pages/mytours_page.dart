@@ -38,7 +38,7 @@ class _MyToursPageState extends State<MyToursPage> {
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           "Meus Passeios",
-          style: TextStyle(fontFamily: 'Poppins', color: Colors.white),
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
         centerTitle: true,
       ),
@@ -63,7 +63,7 @@ class _MyToursPageState extends State<MyToursPage> {
             const Text(
               "Passeios",
               style: TextStyle(
-                color: Colors.white70,
+                color: Colors.white,
                 fontSize: 14,
               ),
             ),
@@ -73,7 +73,7 @@ class _MyToursPageState extends State<MyToursPage> {
                   ? const Center(
                       child: Text(
                         "Nenhum passeio cadastrado ainda.",
-                        style: TextStyle(color: Colors.white70, fontSize: 14),
+                        style: TextStyle(color: Colors.white, fontSize: 14),
                       ),
                     )
                   : ListView.builder(
@@ -137,7 +137,7 @@ class _MyToursPageState extends State<MyToursPage> {
                                         Text(
                                           "Saída: ${t['saida']}\nRetorno: ${t['chegada']}",
                                           style: const TextStyle(
-                                            color: Colors.white70,
+                                            color: Colors.white,
                                             fontSize: 12,
                                           ),
                                         ),

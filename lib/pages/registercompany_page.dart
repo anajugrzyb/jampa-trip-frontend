@@ -65,7 +65,6 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
               const Text(
                 "Registre sua empresa",
                 style: TextStyle(
-                  fontFamily: 'Poppins',
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -78,7 +77,6 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 decoration: InputDecoration(
                   labelText: "Nome da empresa",
                   labelStyle: const TextStyle(
-                          fontFamily: 'Poppins', 
                           color: const Color.fromARGB(255, 90, 124, 225),
                           fontWeight: FontWeight.bold,
                         ),
@@ -95,7 +93,6 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 decoration: InputDecoration(
                   labelText: "CNPJ",
                   labelStyle: const TextStyle(
-                          fontFamily: 'Poppins', 
                           color: const Color.fromARGB(255, 90, 124, 225),
                           fontWeight: FontWeight.bold,
                         ),
@@ -113,7 +110,6 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 decoration: InputDecoration(
                   labelText: "E-mail da empresa",
                   labelStyle: const TextStyle(
-                          fontFamily: 'Poppins',
                           color: const Color.fromARGB(255, 90, 124, 225),
                           fontWeight: FontWeight.bold,
                         ),
@@ -131,7 +127,6 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 decoration:  InputDecoration(
                   labelText: "Senha",
                   labelStyle: const TextStyle(
-                          fontFamily: 'Poppins',
                           color: const Color.fromARGB(255, 90, 124, 225),
                           fontWeight: FontWeight.bold,
                         ),
@@ -149,7 +144,6 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                 decoration: InputDecoration(
                   labelText: "Confirme a senha",
                   labelStyle: const TextStyle(
-                          fontFamily: 'Poppins',
                           color: const Color.fromARGB(255, 90, 124, 225),
                           fontWeight: FontWeight.bold,
                         ),
@@ -176,7 +170,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
                   child: const Text(
                     "Cadastrar empresa",
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

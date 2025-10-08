@@ -36,7 +36,7 @@ class AccountCompanyPage extends StatelessWidget {
                   const Text(
                     "Informações",
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: Colors.white,
                       fontSize: 14,
                     ),
                   ),
@@ -141,7 +141,7 @@ class AccountCompanyPage extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(subtitle),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        trailing: const Icon(Icons.arrow_back, size: 16, color: Colors.white,),
         onTap: onTap,
       ),
     );

@@ -16,7 +16,7 @@ class PixPaymentPage extends StatelessWidget {
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           'Pagamento',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
         centerTitle: true,
       ),

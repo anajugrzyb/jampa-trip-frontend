@@ -96,7 +96,8 @@ class _CompanyPageState extends State<CompanyPage> {
                                     Text(
                                       "4.8",
                                       style: TextStyle(
-                                          color: Colors.white70, fontSize: 16),
+                                          color: Colors.white,
+                                          fontSize: 16),
                                     ),
                                   ],
                                 ),
@@ -207,7 +208,7 @@ class _CompanyPageState extends State<CompanyPage> {
                                 Text(
                                   t['local'] ?? '',
                                   style: const TextStyle(
-                                    color: Colors.white70,
+                                    color: Colors.white,
                                     fontSize: 13,
                                   ),
                                 ),
@@ -243,7 +244,11 @@ class _CompanyPageState extends State<CompanyPage> {
                                     ),
                                     child: const Text(
                                       "Ver mais",
-                                      style: TextStyle(color: Colors.white),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ),

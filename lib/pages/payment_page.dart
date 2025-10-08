@@ -118,7 +118,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           ),
           actions: [
             TextButton(
-              child: const Text("Cancelar", style: TextStyle(color: Colors.white70)),
+              child: const Text("Cancelar", style: TextStyle(color: Colors.white)),
               onPressed: () => Navigator.pop(context),
             ),
             TextButton(
@@ -179,7 +179,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   static InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: Colors.white70),
+      hintStyle: const TextStyle(color: Colors.white),
       filled: true,
       fillColor: const Color(0xFF001070),
       contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
@@ -221,7 +221,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 "Você pode adicionar ou editar seus métodos de pagamento",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white70,
+                  color: Colors.white,
                   fontSize: 14,
                 ),
               ),
@@ -256,7 +256,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         ),
                         subtitle: Text(
                           card['nome_titular'] ?? '',
-                          style: const TextStyle(color: Colors.white70, fontSize: 13),
+                          style: const TextStyle(color: Colors.white, fontSize: 13),
                         ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -275,7 +275,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                     title: const Text("Excluir Cartão", style: TextStyle(color: Colors.white)),
                                     content: const Text(
                                       "Tem certeza que deseja excluir este cartão?",
-                                      style: TextStyle(color: Colors.white70),
+                                      style: TextStyle(color: Colors.white),
                                     ),
                                     actions: [
                                       TextButton(

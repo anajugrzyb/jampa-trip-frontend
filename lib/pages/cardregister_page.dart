@@ -101,7 +101,7 @@ class _CardRegisterPageState extends State<CardRegisterPage> {
         centerTitle: true,
         title: const Text(
           'Adicionar Cartão',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
       body: SingleChildScrollView(
@@ -204,9 +204,9 @@ class _CardRegisterPageState extends State<CardRegisterPage> {
   static InputDecoration _inputDecoration(String hint, {String? helper}) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: Colors.white70),
+      hintStyle: const TextStyle(color: Colors.white),
       helperText: helper,
-      helperStyle: const TextStyle(color: Colors.white54, fontSize: 11),
+      helperStyle: const TextStyle(color: Colors.white, fontSize: 11),
       filled: true,
       fillColor: const Color(0xFF001070),
       contentPadding:
