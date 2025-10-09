@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'account_page.dart';
-import 'tourlist_page.dart'; 
+import 'tourlist_page.dart';
+import 'login_page.dart';
+import '../providers/auth_provider.dart';
+import '../middleware/auth_guard.dart';
 
 class HomePage extends StatelessWidget {
   final String userName; 
@@ -8,131 +12,149 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Cabeçalho
-            Container(
-              width: double.infinity,
-              color: const Color(0xFF000080),
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Column(
-                children: [
-                  const CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage("lib/assets/images/profile.png"), 
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "Seja bem vindo (a), $userName!",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Barra de pesquisa
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                onSubmitted: (value) {
-                  if (value.trim().isNotEmpty) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TourListPage(query: value.trim()),
-                      ),
-                    );
-                  }
-                },
-                decoration: InputDecoration(
-                  hintText: "Para onde você quer ir?",
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                ),
-              ),
-            ),
-
-            // Conteúdo principal
-            Expanded(
-              child: SingleChildScrollView(
+    return AuthGuard(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Cabeçalho
+              Container(
+                width: double.infinity,
+                color: const Color(0xFF000080),
+                padding: const EdgeInsets.symmetric(vertical: 24),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionTitle("Destaques do dia"),
-                    _buildHorizontalList([
-                      {"img": "lib/assets/images/coqueirinho.jpeg", "title": "Praia de Coqueirinho"},
-                      {"img": "lib/assets/images/letreiro.jpeg", "title": "Pacote c/ desconto"},
-                      {"img": "lib/assets/images/centrojoaopessoa.jpeg", "title": "Centro Histórico"},
-                    ]),
-
-                    _buildSectionTitle("Lugares populares perto de você"),
-                    _buildHorizontalList([
-                      {"img": "lib/assets/images/tambaba.jpeg", "title": "Praia de Tambaba"},
-                      {"img": "lib/assets/images/piscinasnaturais.jpeg", "title": "Piscinas Naturais"},
-                    ]),
-
-                    _buildSectionTitle("Categorias"),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: const [
-                          _CategoryIcon(icon: Icons.tour, label: "Passeios"),
-                          _CategoryIcon(icon: Icons.hotel, label: "Hospedagem"),
-                          _CategoryIcon(icon: Icons.restaurant, label: "Restaurantes"),
-                          _CategoryIcon(icon: Icons.park, label: "Trilhas"),
-                        ],
+                    const CircleAvatar(
+                      radius: 40,
+                      backgroundImage: AssetImage("lib/assets/images/profile.png"), 
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "Seja bem vindo (a), $userName!",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
 
-            // Rodapé
-            Container(
-              color: const Color(0xFF000080),
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.home, color: Colors.white),
-                    label: const Text("Início"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0000CD),
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () {
+              // Barra de pesquisa
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextField(
+                  onSubmitted: (value) {
+                    if (value.trim().isNotEmpty) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AccountPage(userName: userName), 
+                          builder: (context) => TourListPage(query: value.trim()),
                         ),
                       );
-                    },
-                    icon: const Icon(Icons.person, color: Colors.white),
-                    label: const Text("Perfil"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0000CD),
+                    }
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Para onde você quer ir?",
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
                     ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20),
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+
+              // Conteúdo principal
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSectionTitle("Destaques do dia"),
+                      _buildHorizontalList([
+                        {"img": "lib/assets/images/coqueirinho.jpeg", "title": "Praia de Coqueirinho"},
+                        {"img": "lib/assets/images/letreiro.jpeg", "title": "Pacote c/ desconto"},
+                        {"img": "lib/assets/images/centrojoaopessoa.jpeg", "title": "Centro Histórico"},
+                      ]),
+
+                      _buildSectionTitle("Lugares populares perto de você"),
+                      _buildHorizontalList([
+                        {"img": "lib/assets/images/tambaba.jpeg", "title": "Praia de Tambaba"},
+                        {"img": "lib/assets/images/piscinasnaturais.jpeg", "title": "Piscinas Naturais"},
+                      ]),
+
+                      _buildSectionTitle("Categorias"),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: const [
+                            _CategoryIcon(icon: Icons.tour, label: "Passeios"),
+                            _CategoryIcon(icon: Icons.hotel, label: "Hospedagem"),
+                            _CategoryIcon(icon: Icons.restaurant, label: "Restaurantes"),
+                            _CategoryIcon(icon: Icons.park, label: "Trilhas"),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Rodapé
+              Container(
+                color: const Color(0xFF000080),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.home, color: Colors.white),
+                      label: const Text("Início"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0000CD),
+                      ),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AccountPage(userName: userName), 
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.person, color: Colors.white),
+                      label: const Text("Perfil"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0000CD),
+                      ),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                        await authProvider.logout();
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LoginPage()),
+                          (route) => false,
+                        );
+                      },
+                      icon: const Icon(Icons.logout, color: Colors.white),
+                      label: const Text("Sair"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF8B0000),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -219,4 +241,3 @@ class _CategoryIcon extends StatelessWidget {
     );
   }
 }
-
