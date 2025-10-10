@@ -20,6 +20,7 @@ class _ReservationPageState extends State<ReservationPage> {
   String _endereco = "";
   String _observacoes = "";
   int _qtdReservada = 1;
+  double _valorTotal = 0.0;
 
   String? _dataSelecionada;
   List<String> _datasDisponiveis = [];
@@ -29,6 +30,9 @@ class _ReservationPageState extends State<ReservationPage> {
   void initState() {
     super.initState();
     _carregarDatas();
+
+    double preco = (widget.tour['preco'] ?? 0).toDouble();
+    _valorTotal = preco;
   }
 
   Future<void> _carregarDatas() async {
@@ -174,6 +178,7 @@ class _ReservationPageState extends State<ReservationPage> {
         "observacoes": _observacoes,
         "tour_nome": widget.tour['nome'],
         "empresa": widget.tour['empresa'],
+        "valor_total": _valorTotal,
       };
 
       await db.insertReserva(reserva);
@@ -227,6 +232,7 @@ class _ReservationPageState extends State<ReservationPage> {
   Widget build(BuildContext context) {
     final int qtdMaxima =
         int.tryParse(widget.tour['qtd_pessoas'].toString()) ?? 1;
+    final double preco = (widget.tour['preco'] ?? 0).toDouble();
 
     return Scaffold(
       backgroundColor: const Color(0xFF00008B),
@@ -329,7 +335,12 @@ class _ReservationPageState extends State<ReservationPage> {
                   IconButton(
                     icon: const Icon(Icons.remove_circle, color: Colors.redAccent),
                     onPressed: () {
-                      if (_qtdReservada > 1) setState(() => _qtdReservada--);
+                      if (_qtdReservada > 1) {
+                        setState(() {
+                          _qtdReservada--;
+                          _valorTotal = _qtdReservada * preco;
+                        });
+                      }
                     },
                   ),
                   Text(
@@ -343,11 +354,27 @@ class _ReservationPageState extends State<ReservationPage> {
                     icon: const Icon(Icons.add_circle, color: Colors.greenAccent),
                     onPressed: () {
                       if (_qtdReservada < qtdMaxima) {
-                        setState(() => _qtdReservada++);
+                        setState(() {
+                          _qtdReservada++;
+                          _valorTotal = _qtdReservada * preco;
+                        });
                       }
                     },
                   ),
                 ],
+              ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  "Valor total: R\$ ${_valorTotal.toStringAsFixed(2)}",
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
 
               _buildStyledField(
