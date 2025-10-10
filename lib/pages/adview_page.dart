@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'reservation_page.dart';
+import 'company_page.dart';
 
 class AdViewPage extends StatelessWidget {
   final Map<String, dynamic> tour;
@@ -37,6 +38,7 @@ class AdViewPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(icon, color: Colors.blue[700]),
           const SizedBox(width: 8),
@@ -54,6 +56,8 @@ class AdViewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imagens = (tour['imagens'] as String?)?.split(',') ?? [];
+    final empresa = tour['empresa'];
+    final temEmpresa = empresa != null && empresa.toString().trim().isNotEmpty;
 
     return Scaffold(
       backgroundColor: const Color(0xFF00008B),
@@ -101,21 +105,63 @@ class AdViewPage extends StatelessWidget {
                   children: [
                     Text(
                       tour['nome'] ?? '',
-                      style: TextStyle( 
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.blue[900],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
+
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.business, color: Colors.blue[700]),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: temEmpresa
+                              ? GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => CompanyPage(
+                                          company: {
+                                            'company_name': empresa,
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    empresa.toString(),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                )
+                              : const Text(
+                                  "Empresa não informada",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 8),
 
                     _buildInfoRow(Icons.departure_board, "Saída", tour['saida']),
                     _buildInfoRow(Icons.flag, "Chegada", tour['chegada']),
-                    _buildInfoRow(
-                        Icons.people, "Qtd pessoas", tour['qtd_pessoas']),
+                    _buildInfoRow(Icons.people, "Qtd pessoas", tour['qtd_pessoas']),
                     const Divider(height: 24, thickness: 1),
 
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const Icon(Icons.attach_money,
                             color: Colors.green, size: 22),
@@ -140,6 +186,7 @@ class AdViewPage extends StatelessWidget {
                 ),
               ),
             ),
+
             const SizedBox(height: 30),
 
             SizedBox(
