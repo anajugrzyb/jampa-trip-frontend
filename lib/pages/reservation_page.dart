@@ -99,7 +99,7 @@ class _ReservationPageState extends State<ReservationPage> {
                 if (_dataSelecionada == null) return false;
                 final dataFormatada = DateFormat('dd/MM/yyyy').format(day);
                 return dataFormatada == _dataSelecionada;
-              },  
+              },
               enabledDayPredicate: (day) {
                 final dataStr = DateFormat('dd/MM/yyyy').format(day);
                 return _datasDisponiveis.contains(dataStr) &&
@@ -172,6 +172,8 @@ class _ReservationPageState extends State<ReservationPage> {
         "qtd_pessoas": _qtdReservada,
         "data_reserva": _dataSelecionada,
         "observacoes": _observacoes,
+        "tour_nome": widget.tour['nome'],
+        "empresa": widget.tour['empresa'],
       };
 
       await db.insertReserva(reserva);
@@ -244,6 +246,37 @@ class _ReservationPageState extends State<ReservationPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.blue[800],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.tour['nome'] ?? "Nome do Passeio",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      widget.tour['empresa'] ?? "Empresa não informada",
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
               _buildStyledField(
                 label: "Nome completo",
                 validator: (v) =>
@@ -283,6 +316,7 @@ class _ReservationPageState extends State<ReservationPage> {
                 onSaved: (v) => _endereco = v ?? "",
               ),
               const SizedBox(height: 8),
+
               Row(
                 children: [
                   Expanded(
@@ -315,12 +349,15 @@ class _ReservationPageState extends State<ReservationPage> {
                   ),
                 ],
               ),
+
               _buildStyledField(
                 label: "Observações adicionais",
                 maxLines: 3,
                 onSaved: (v) => _observacoes = v ?? "",
               ),
+
               const SizedBox(height: 20),
+
               ElevatedButton(
                 onPressed: _confirmarReserva,
                 style: ElevatedButton.styleFrom(
