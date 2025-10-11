@@ -3,6 +3,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import '../data/db_helper.dart';
+import 'methodpayments_page.dart';
 
 class ReservationPage extends StatefulWidget {
   final Map<String, dynamic> tour;
@@ -190,7 +191,13 @@ class _ReservationPageState extends State<ReservationPage> {
         ),
       );
 
-      Navigator.pushNamed(context, '/payment', arguments: reserva);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const MetodoPagamentoPage(),
+        ),
+      );
+
     }
   }
 
