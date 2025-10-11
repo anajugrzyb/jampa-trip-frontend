@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/db_helper.dart';
-import 'payment_page.dart';
+import 'methodpayments_page.dart';
 
 class CardRegisterPage extends StatefulWidget {
   const CardRegisterPage({super.key});
@@ -86,7 +86,7 @@ class _CardRegisterPageState extends State<CardRegisterPage> {
     Future.delayed(const Duration(milliseconds: 700), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const PaymentScreen()),
+        MaterialPageRoute(builder: (_) => const MetodoPagamentoPage()),
       );
     });
   }

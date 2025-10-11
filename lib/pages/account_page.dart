@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'payment_page.dart';  
+import 'methodpayments_page.dart';  
 import 'login_page.dart';
 import 'informationuser_page.dart';
 
@@ -91,7 +91,7 @@ class AccountPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const PaymentScreen(),
+                            builder: (context) => const MetodoPagamentoPage(),
                           ),
                         );
                       },
