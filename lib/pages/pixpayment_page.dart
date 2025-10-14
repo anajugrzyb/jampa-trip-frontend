@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class PixPaymentPage extends StatelessWidget {
-  const PixPaymentPage({super.key});
+  final double valorTotal; 
+
+  const PixPaymentPage({super.key, required this.valorTotal});
 
   @override
   Widget build(BuildContext context) {
@@ -32,22 +34,44 @@ class PixPaymentPage extends StatelessWidget {
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
-                fontWeight: FontWeight.bold
+                fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 10),
+
+            const SizedBox(height: 15),
+
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.white24),
+              ),
+              child: Text(
+                "Valor a pagar: R\$ ${valorTotal.toStringAsFixed(2)}",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
             const Text(
-              'Copie o código abaixo e utilize o Pix Copia e Cola no aplicativo que você vai fazer o pagamento.',
+              'Copie o código abaixo e utilize o Pix Copia e Cola no aplicativo do seu banco para concluir o pagamento.',
               style: TextStyle(color: Colors.white70),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
+
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(8)
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 children: [
@@ -56,7 +80,7 @@ class PixPaymentPage extends StatelessWidget {
                       pixCode,
                       style: const TextStyle(
                         fontSize: 14,
-                        color: Colors.black87
+                        color: Colors.black87,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -73,6 +97,7 @@ class PixPaymentPage extends StatelessWidget {
                 ],
               ),
             ),
+
             const SizedBox(height: 25),
 
             ElevatedButton(
@@ -84,9 +109,10 @@ class PixPaymentPage extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue[700],
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
               child: const Text(
@@ -101,11 +127,19 @@ class PixPaymentPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                  },
                   icon: const Icon(Icons.home, color: Colors.white),
-                  label: const Text('Início', style: TextStyle(color: Colors.white)),
+                  label: const Text('Início',
+                      style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[700],
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
                 ElevatedButton.icon(
@@ -113,9 +147,15 @@ class PixPaymentPage extends StatelessWidget {
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  label: const Text('Voltar', style: TextStyle(color: Colors.white)),
+                  label: const Text('Voltar',
+                      style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[700],
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
               ],

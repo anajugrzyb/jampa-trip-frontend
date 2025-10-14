@@ -3,7 +3,9 @@ import '../data/db_helper.dart';
 import 'methodpayments_page.dart';
 
 class CardRegisterPage extends StatefulWidget {
-  const CardRegisterPage({super.key});
+  final double valorTotal; 
+
+  const CardRegisterPage({super.key, required this.valorTotal});
 
   @override
   State<CardRegisterPage> createState() => _CardRegisterPageState();
@@ -86,7 +88,9 @@ class _CardRegisterPageState extends State<CardRegisterPage> {
     Future.delayed(const Duration(milliseconds: 700), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const MetodoPagamentoPage()),
+        MaterialPageRoute(
+          builder: (_) => MetodoPagamentoPage(valorTotal: widget.valorTotal),
+        ),
       );
     });
   }

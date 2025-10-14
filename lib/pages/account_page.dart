@@ -7,8 +7,9 @@ import 'feedback_page.dart';
 class AccountPage extends StatelessWidget {
   final String userName;
   final String userEmail;
+  final double _valorTotal;
 
-  const AccountPage({super.key, required this.userName, required this.userEmail});
+  const AccountPage({super.key, required this.userName, required this.userEmail, required double valorTotal}) : _valorTotal = valorTotal;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +93,7 @@ class AccountPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const MetodoPagamentoPage(),
+                            builder: (context) => MetodoPagamentoPage(valorTotal: _valorTotal),
                           ),
                         );
                       },

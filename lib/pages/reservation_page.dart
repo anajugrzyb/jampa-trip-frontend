@@ -194,7 +194,9 @@ class _ReservationPageState extends State<ReservationPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const MetodoPagamentoPage(),
+          builder: (context) => MetodoPagamentoPage(
+            valorTotal: _valorTotal,
+          ),
         ),
       );
 

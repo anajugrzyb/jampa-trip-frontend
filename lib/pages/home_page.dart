@@ -144,6 +144,7 @@ class HomePage extends StatelessWidget {
                           builder: (context) => AccountPage(
                             userName: userName,
                             userEmail: userEmail,
+                            valorTotal: 0.0, 
                           ),
                         ),
                       );

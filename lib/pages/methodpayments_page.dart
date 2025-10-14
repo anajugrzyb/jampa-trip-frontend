@@ -4,7 +4,9 @@ import 'pixpayment_page.dart';
 import 'cardregister_page.dart';
 
 class MetodoPagamentoPage extends StatefulWidget {
-  const MetodoPagamentoPage({super.key});
+  final double valorTotal; // 👈 Novo campo
+
+  const MetodoPagamentoPage({super.key, required this.valorTotal});
 
   @override
   State<MetodoPagamentoPage> createState() => _MetodoPagamentoPageState();
@@ -31,18 +33,14 @@ class _MetodoPagamentoPageState extends State<MetodoPagamentoPage> {
   void _goToCardRegister() async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const CardRegisterPage()),
+      MaterialPageRoute(builder: (_) => CardRegisterPage(valorTotal: widget.valorTotal)),
     );
     _loadCards();
   }
 
   void _selectCard(int cardId) {
     setState(() {
-      if (_selectedCardId == cardId) {
-        _selectedCardId = null;
-      } else {
-        _selectedCardId = cardId;
-      }
+      _selectedCardId = _selectedCardId == cardId ? null : cardId;
     });
   }
 
@@ -69,6 +67,25 @@ class _MetodoPagamentoPageState extends State<MetodoPagamentoPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFF001E6C),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                "Valor a ser cobrado: R\$ ${widget.valorTotal.toStringAsFixed(2)}",
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
             const Text(
               "Escolha uma forma de pagamento:",
               style: TextStyle(
@@ -87,10 +104,15 @@ class _MetodoPagamentoPageState extends State<MetodoPagamentoPage> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const PixPaymentPage()),
+                  MaterialPageRoute(
+                    builder: (_) => PixPaymentPage(
+                      valorTotal: widget.valorTotal,
+                    ),
+                  ),
                 );
               },
             ),
+
             _metodoItem(
               nome: "Adicionar novo cartão",
               iconPath: "lib/assets/images/cartao.jpg",
@@ -134,11 +156,13 @@ class _MetodoPagamentoPageState extends State<MetodoPagamentoPage> {
                   ? null
                   : () {
                       final selectedCard = _cards.firstWhere(
-                          (card) => card['id'] == _selectedCardId);
+                        (card) => card['id'] == _selectedCardId,
+                      );
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                              "Pagamento confirmado com o cartão terminando em ${selectedCard['numero_cartao'].toString().substring(selectedCard['numero_cartao'].toString().length - 4)}"),
+                            "Pagamento de R\$ ${widget.valorTotal.toStringAsFixed(2)} confirmado com o cartão terminando em ${selectedCard['numero_cartao'].toString().substring(selectedCard['numero_cartao'].toString().length - 4)}",
+                          ),
                         ),
                       );
                     },
@@ -225,7 +249,8 @@ class _MetodoPagamentoPageState extends State<MetodoPagamentoPage> {
   Widget _cardItem(Map<String, dynamic> card) {
     final id = card['id'] as int;
     final number = card['numero_cartao'] ?? '';
-    final last4 = number.length >= 4 ? number.substring(number.length - 4) : number;
+    final last4 =
+        number.length >= 4 ? number.substring(number.length - 4) : number;
     final holder = card['nome_titular'] ?? '';
     final month = card['mes'] ?? '--';
     final year = card['ano'] ?? '--';
@@ -244,13 +269,6 @@ class _MetodoPagamentoPageState extends State<MetodoPagamentoPage> {
           border: isSelected
               ? Border.all(color: Colors.lightBlueAccent, width: 2)
               : null,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.25),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
-            ),
-          ],
         ),
         child: Row(
           children: [
@@ -289,13 +307,12 @@ class _MetodoPagamentoPageState extends State<MetodoPagamentoPage> {
               isSelected
                   ? Icons.radio_button_checked
                   : Icons.radio_button_off,
-              color:
-                  isSelected ? Colors.lightBlueAccent : Colors.white,
+              color: isSelected ? Colors.lightBlueAccent : Colors.white,
               size: 26,
             ),
           ],
         ),
       ),
     );
-  }                                    
+  }
 }
