@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'methodpayments_page.dart';  
 import 'login_page.dart';
 import 'informationuser_page.dart';
+import 'feedback_page.dart';
 
 class AccountPage extends StatelessWidget {
   final String userName;
@@ -112,7 +113,14 @@ class AccountPage extends StatelessWidget {
                       icon: Icons.feedback,
                       title: "Feedback",
                       subtitle: "Meus comentários",
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FeedbackPage(),
+                          ),
+                        );
+                      },
                     ),
 
                     const SizedBox(height: 16),
