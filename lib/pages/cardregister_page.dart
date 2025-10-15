@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../data/db_helper.dart';
 import 'methodpayments_page.dart';
+import 'reservationconfirmed_page.dart';
 
 class CardRegisterPage extends StatefulWidget {
-  final double valorTotal; 
+  final double valorTotal;
 
   const CardRegisterPage({super.key, required this.valorTotal});
 
@@ -18,13 +19,13 @@ class _CardRegisterPageState extends State<CardRegisterPage> {
 
   String? _selectedMonth;
   String? _selectedYear;
+  bool _saveCard = false; 
 
   bool _isValidCardNumber(String number) {
     if (!RegExp(r'^[0-9]{13,19}$').hasMatch(number)) return false;
 
     int sum = 0;
     bool alternate = false;
-
     for (int i = number.length - 1; i >= 0; i--) {
       int digit = int.parse(number[i]);
       if (alternate) {
@@ -37,7 +38,7 @@ class _CardRegisterPageState extends State<CardRegisterPage> {
     return sum % 10 == 0;
   }
 
-  Future<void> _saveCardToDb() async {
+  Future<void> _processPayment() async {
     final holder = _holderController.text.trim();
     final number = _numberController.text.trim().replaceAll(' ', '');
     final cvv = _cvvController.text.trim();
@@ -55,42 +56,72 @@ class _CardRegisterPageState extends State<CardRegisterPage> {
 
     if (!_isValidCardNumber(number)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Número do cartão inválido. Verifique e tente novamente."),
-        ),
+        const SnackBar(content: Text("Número do cartão inválido.")),
       );
       return;
     }
 
-    final isValidCvv = RegExp(r'^[0-9]{3,4}$').hasMatch(cvv);
-    if (!isValidCvv) {
+    if (!RegExp(r'^[0-9]{3,4}$').hasMatch(cvv)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("O CVV deve conter 3 ou 4 dígitos numéricos."),
-        ),
+        const SnackBar(content: Text("CVV inválido. Deve conter 3 ou 4 dígitos.")),
       );
       return;
     }
 
-    final db = DBHelper();
-    await db.insertCard({
-      'nome_titular': holder,
-      'numero_cartao': number,
-      'mes': _selectedMonth,
-      'ano': _selectedYear,
-      'cvv': cvv,
-    });
+    if (_saveCard) {
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: const Color(0xFF001E6C),
+          title: const Text(
+            "Salvar cartão?",
+            style: TextStyle(color: Colors.white),
+          ),
+          content: const Text(
+            "Deseja realmente salvar este cartão para futuras compras?",
+            style: TextStyle(color: Colors.white70),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text("Não", style: TextStyle(color: Colors.white)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text("Sim", style: TextStyle(color: Colors.lightBlueAccent)),
+            ),
+          ],
+        ),
+      );
+
+      if (confirm == true) {
+        final db = DBHelper();
+        await db.insertCard({
+          'nome_titular': holder,
+          'numero_cartao': number,
+          'mes': _selectedMonth,
+          'ano': _selectedYear,
+          'cvv': cvv,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Cartão salvo com sucesso!")),
+        );
+      }
+    }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Cartão cadastrado com sucesso!")),
+      SnackBar(
+        content: Text(
+          "Pagamento de R\$ ${widget.valorTotal.toStringAsFixed(2)} aprovado!",
+        ),
+      ),
     );
 
-    Future.delayed(const Duration(milliseconds: 700), () {
+    Future.delayed(const Duration(seconds: 1), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (_) => MetodoPagamentoPage(valorTotal: widget.valorTotal),
-        ),
+        MaterialPageRoute(builder: (_) => const ReservationConfirmedPage()),
       );
     });
   }
@@ -132,8 +163,8 @@ class _CardRegisterPageState extends State<CardRegisterPage> {
               style: const TextStyle(color: Colors.white),
               keyboardType: TextInputType.number,
               maxLength: 19,
-              decoration: _inputDecoration('Número do cartão')
-                  .copyWith(counterText: ""),
+              decoration:
+                  _inputDecoration('Número do cartão').copyWith(counterText: ""),
             ),
             const SizedBox(height: 15),
 
@@ -149,7 +180,10 @@ class _CardRegisterPageState extends State<CardRegisterPage> {
                       12,
                       (i) => DropdownMenuItem(
                         value: (i + 1).toString().padLeft(2, '0'),
-                        child: Text((i + 1).toString().padLeft(2, '0')),
+                        child: Text(
+                          (i + 1).toString().padLeft(2, '0'),
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                     onChanged: (val) => setState(() => _selectedMonth = val),
@@ -166,7 +200,10 @@ class _CardRegisterPageState extends State<CardRegisterPage> {
                       20,
                       (i) => DropdownMenuItem(
                         value: (2025 + i).toString(),
-                        child: Text((2025 + i).toString()),
+                        child: Text(
+                          (2025 + i).toString(),
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                     onChanged: (val) => setState(() => _selectedYear = val),
@@ -186,16 +223,33 @@ class _CardRegisterPageState extends State<CardRegisterPage> {
             ),
             const SizedBox(height: 25),
 
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Salvar cartão para futuras compras",
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                ),
+                Switch(
+                  value: _saveCard,
+                  activeColor: Colors.lightBlueAccent,
+                  onChanged: (val) => setState(() => _saveCard = val),
+                ),
+              ],
+            ),
+            const SizedBox(height: 25),
+
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blueAccent,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              onPressed: _saveCardToDb,
+              onPressed: _processPayment,
               child: const Text(
-                'Cadastrar',
+                'Pagar',
                 style: TextStyle(fontSize: 16, color: Colors.white),
               ),
             ),
@@ -208,7 +262,7 @@ class _CardRegisterPageState extends State<CardRegisterPage> {
   static InputDecoration _inputDecoration(String hint, {String? helper}) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: Colors.white),
+      hintStyle: const TextStyle(color: Colors.white70),
       helperText: helper,
       helperStyle: const TextStyle(color: Colors.white, fontSize: 11),
       filled: true,

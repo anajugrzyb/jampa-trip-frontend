@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import '../data/db_helper.dart';
 import 'pixpayment_page.dart';
 import 'cardregister_page.dart';
-import 'reservationconfirmed_page.dart'; 
+import 'reservationconfirmed_page.dart';
 
 class MetodoPagamentoPage extends StatefulWidget {
-  final double valorTotal; 
+  final double valorTotal;
 
   const MetodoPagamentoPage({super.key, required this.valorTotal});
 
@@ -147,7 +147,43 @@ class _MetodoPagamentoPageState extends State<MetodoPagamentoPage> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        ..._cards.map((card) => _cardItem(card)).toList(),
+                        ..._cards.map((card) {
+                          return Dismissible(
+                            key: Key(card['id'].toString()),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              alignment: Alignment.centerRight,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.redAccent,
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: const Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                            ),
+                            onDismissed: (direction) async {
+                              final db = DBHelper();
+                              await db.deleteCard(card['id']);
+                              setState(() {
+                                _cards.removeWhere(
+                                    (c) => c['id'] == card['id']);
+                              });
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text("Cartão removido com sucesso."),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            },
+                            child: _cardItem(card),
+                          );
+                        }).toList(),
                       ],
                     ),
             ),
@@ -175,7 +211,7 @@ class _MetodoPagamentoPageState extends State<MetodoPagamentoPage> {
                           context,
                           MaterialPageRoute(
                             builder: (_) =>
-                                const ReservationConfirmedPage(), 
+                                const ReservationConfirmedPage(),
                           ),
                         );
                       });

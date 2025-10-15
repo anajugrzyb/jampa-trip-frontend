@@ -20,7 +20,7 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 9, 
+      version: 9,
       onCreate: (db, version) async {
         await _createTables(db);
       },
@@ -167,6 +167,7 @@ class DBHelper {
     ''');
   }
 
+  // ---------------------- USERS ----------------------
   Future<int> insertUser(Map<String, dynamic> user) async {
     var dbClient = await db;
     return await dbClient.insert('users', user);
@@ -182,12 +183,14 @@ class DBHelper {
     return result.isNotEmpty ? result.first : null;
   }
 
+  // ---------------------- COMPANIES ----------------------
   Future<int> insertCompany(Map<String, dynamic> company) async {
     var dbClient = await db;
     return await dbClient.insert('companies', company);
   }
 
-  Future<Map<String, dynamic>?> getCompany(String email, String password) async {
+  Future<Map<String, dynamic>?> getCompany(
+      String email, String password) async {
     final dbClient = await db;
     final result = await dbClient.query(
       'companies',
@@ -197,6 +200,7 @@ class DBHelper {
     return result.isNotEmpty ? result.first : null;
   }
 
+  // ---------------------- TOURS ----------------------
   Future<int> insertTour(Map<String, dynamic> tour) async {
     var dbClient = await db;
     return await dbClient.insert('tours', tour);
@@ -219,7 +223,8 @@ class DBHelper {
 
   Future<int> updateTour(int id, Map<String, dynamic> tour) async {
     var dbClient = await db;
-    return await dbClient.update('tours', tour, where: 'id = ?', whereArgs: [id]);
+    return await dbClient.update('tours', tour,
+        where: 'id = ?', whereArgs: [id]);
   }
 
   Future<int> deleteTour(int id) async {
@@ -227,6 +232,7 @@ class DBHelper {
     return await dbClient.delete('tours', where: 'id = ?', whereArgs: [id]);
   }
 
+  // ---------------------- RESERVAS ----------------------
   Future<int> insertReserva(Map<String, dynamic> reserva) async {
     final dbClient = await db;
     return await dbClient.insert('reservas', reserva);
@@ -253,7 +259,8 @@ class DBHelper {
     if (total == null) return 0;
     return (total is int) ? total : int.tryParse(total.toString()) ?? 0;
   }
-  
+
+  // ---------------------- CARDS ----------------------
   Future<int> insertCard(Map<String, dynamic> card) async {
     final dbClient = await db;
     return await dbClient.insert('cards', card);
@@ -264,11 +271,17 @@ class DBHelper {
     return await dbClient.query('cards', orderBy: 'id DESC');
   }
 
+  /// 🔥 Novo método: deletar um cartão pelo ID
   Future<int> deleteCard(int id) async {
     final dbClient = await db;
-    return await dbClient.delete('cards', where: 'id = ?', whereArgs: [id]);
+    return await dbClient.delete(
+      'cards',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
+  /// Limpa todos os cartões cadastrados
   Future<void> clearAllCards() async {
     final dbClient = await db;
     await dbClient.delete('cards');
