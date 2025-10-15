@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import '../data/db_helper.dart';
 import 'pixpayment_page.dart';
 import 'cardregister_page.dart';
+import 'reservationconfirmed_page.dart'; 
 
 class MetodoPagamentoPage extends StatefulWidget {
-  final double valorTotal; // 👈 Novo campo
+  final double valorTotal; 
 
   const MetodoPagamentoPage({super.key, required this.valorTotal});
 
@@ -33,7 +34,9 @@ class _MetodoPagamentoPageState extends State<MetodoPagamentoPage> {
   void _goToCardRegister() async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => CardRegisterPage(valorTotal: widget.valorTotal)),
+      MaterialPageRoute(
+        builder: (_) => CardRegisterPage(valorTotal: widget.valorTotal),
+      ),
     );
     _loadCards();
   }
@@ -158,21 +161,30 @@ class _MetodoPagamentoPageState extends State<MetodoPagamentoPage> {
                       final selectedCard = _cards.firstWhere(
                         (card) => card['id'] == _selectedCardId,
                       );
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            "Pagamento de R\$ ${widget.valorTotal.toStringAsFixed(2)} confirmado com o cartão terminando em ${selectedCard['numero_cartao'].toString().substring(selectedCard['numero_cartao'].toString().length - 4)}",
+                            "Pagamento de R\$ ${widget.valorTotal.toStringAsFixed(2)} aprovado com o cartão terminando em ${selectedCard['numero_cartao'].toString().substring(selectedCard['numero_cartao'].toString().length - 4)}",
                           ),
                         ),
                       );
+
+                      Future.delayed(const Duration(seconds: 1), () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                const ReservationConfirmedPage(), 
+                          ),
+                        );
+                      });
                     },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.lightBlueAccent,
-                disabledBackgroundColor: Colors.grey,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
               child: const Text(
@@ -180,7 +192,7 @@ class _MetodoPagamentoPageState extends State<MetodoPagamentoPage> {
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),

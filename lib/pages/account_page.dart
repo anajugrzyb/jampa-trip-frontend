@@ -86,19 +86,6 @@ class AccountPage extends StatelessWidget {
                       },
                     ),
                     _buildMenuItem(
-                      icon: Icons.payment,
-                      title: "Pagamento",
-                      subtitle: "Métodos de pagamento",
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MetodoPagamentoPage(valorTotal: _valorTotal),
-                          ),
-                        );
-                      },
-                    ),
-                    _buildMenuItem(
                       icon: Icons.bookmark,
                       title: "Reservas",
                       subtitle: "Minhas reservas, cancelamentos",
