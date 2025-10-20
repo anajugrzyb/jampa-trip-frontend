@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../data/db_helper.dart';
-import 'methodpayments_page.dart';
 import 'reservationconfirmed_page.dart';
 
 class CardRegisterPage extends StatefulWidget {

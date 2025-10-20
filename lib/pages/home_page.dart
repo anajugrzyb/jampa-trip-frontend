@@ -21,22 +21,35 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> _recentTours = [];
   List<Map<String, dynamic>> _companies = [];
+  File? _userImage; 
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    _loadUserImage();
   }
 
   Future<void> _loadData() async {
     final db = DBHelper();
-    final tours = await db.getTours(); 
-    final companies = await db.getCompanies(); 
+    final tours = await db.getTours();
+    final companies = await db.getCompanies();
 
     setState(() {
       _recentTours = tours.reversed.take(5).toList();
       _companies = companies;
     });
+  }
+
+  Future<void> _loadUserImage() async {
+    final db = DBHelper();
+    final imagePath = await db.getUserImage(widget.userEmail);
+
+    if (imagePath != null && File(imagePath).existsSync()) {
+      setState(() {
+        _userImage = File(imagePath);
+      });
+    }
   }
 
   ImageProvider _buildImageProvider(String? path) {
@@ -62,10 +75,12 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 35,
-                    backgroundImage:
-                        AssetImage("lib/assets/images/profile.png"),
+                    backgroundImage: _userImage != null
+                        ? FileImage(_userImage!)
+                        : const AssetImage("lib/assets/images/profile.png")
+                            as ImageProvider,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -165,24 +180,23 @@ class _HomePageState extends State<HomePage> {
                     builder: (context) => TourListPage(query: '')),
               );
             }),
-            _buildNavButton(Icons.person, "Perfil", false, () {
-              Navigator.push(
+            _buildNavButton(Icons.person, "Perfil", false, () async {
+              await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => AccountPage(
                     userName: widget.userName,
                     userEmail: widget.userEmail,
-                    valorTotal: 0.0,
                   ),
                 ),
               );
+              _loadUserImage();
             }),
           ],
         ),
       ),
     );
   }
-
 
   Widget _buildSectionTitle(String title) {
     return Padding(

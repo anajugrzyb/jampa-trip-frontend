@@ -20,82 +20,14 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 10, 
+      version: 11,
       onCreate: (db, version) async {
         await _createTables(db);
       },
       onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 3) {
-          await db.execute('''
-            CREATE TABLE IF NOT EXISTS tours (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              nome TEXT,
-              local TEXT,
-              datas TEXT,
-              saida TEXT,
-              chegada TEXT,
-              qtd_pessoas TEXT,
-              info TEXT,
-              imagens TEXT,
-              preco REAL DEFAULT 0,
-              empresa TEXT
-            )
-          ''');
-        }
-
-        if (oldVersion < 4) {
-          await db.execute('ALTER TABLE tours ADD COLUMN preco REAL DEFAULT 0');
-        }
-
-        if (oldVersion < 5) {
-          await db.execute('''
-            CREATE TABLE IF NOT EXISTS reservas (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              tour_id INTEGER,
-              nome TEXT,
-              telefone TEXT,
-              endereco TEXT,
-              qtd_pessoas INTEGER,
-              observacoes TEXT,
-              data_reserva TEXT,
-              tour_nome TEXT,
-              empresa TEXT,
-              valor_total REAL,
-              FOREIGN KEY (tour_id) REFERENCES tours (id) ON DELETE CASCADE
-            )
-          ''');
-        }
-
-        if (oldVersion < 6) {
-          await db.execute('ALTER TABLE tours ADD COLUMN empresa TEXT');
-        }
-
-        if (oldVersion < 7) {
-          await db.execute('ALTER TABLE reservas ADD COLUMN data_reserva TEXT');
-        }
-
-        if (oldVersion < 8) {
-          await db.execute('''
-            CREATE TABLE IF NOT EXISTS cards (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              nome_titular TEXT,
-              numero_cartao TEXT,
-              mes TEXT,
-              ano TEXT,
-              cvv TEXT
-            )
-          ''');
-        }
-
-        if (oldVersion < 9) {
+        if (oldVersion < 11) {
           try {
-            await db.execute('ALTER TABLE reservas ADD COLUMN tour_nome TEXT');
-          } catch (_) {}
-          try {
-            await db.execute('ALTER TABLE reservas ADD COLUMN empresa TEXT');
-          } catch (_) {}
-          try {
-            await db.execute('ALTER TABLE reservas ADD COLUMN valor_total REAL');
+            await db.execute('ALTER TABLE users ADD COLUMN profile_image TEXT');
           } catch (_) {}
         }
 
@@ -110,6 +42,18 @@ class DBHelper {
             await db.execute('ALTER TABLE companies ADD COLUMN descricao TEXT');
           } catch (_) {}
         }
+
+        if (oldVersion < 9) {
+          try {
+            await db.execute('ALTER TABLE reservas ADD COLUMN tour_nome TEXT');
+          } catch (_) {}
+          try {
+            await db.execute('ALTER TABLE reservas ADD COLUMN empresa TEXT');
+          } catch (_) {}
+          try {
+            await db.execute('ALTER TABLE reservas ADD COLUMN valor_total REAL');
+          } catch (_) {}
+        }
       },
     );
   }
@@ -120,7 +64,8 @@ class DBHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         email TEXT,
-        password TEXT
+        password TEXT,
+        profile_image TEXT
       )
     ''');
 
@@ -198,6 +143,30 @@ class DBHelper {
     return result.isNotEmpty ? result.first : null;
   }
 
+  Future<void> updateUserImage(String email, String imagePath) async {
+    final dbClient = await db;
+    await dbClient.update(
+      'users',
+      {'profile_image': imagePath},
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+  }
+
+  Future<String?> getUserImage(String email) async {
+    final dbClient = await db;
+    final result = await dbClient.query(
+      'users',
+      columns: ['profile_image'],
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+    if (result.isNotEmpty) {
+      return result.first['profile_image'] as String?;
+    }
+    return null;
+  }
+
   // ---------------------- COMPANIES ----------------------
   Future<int> insertCompany(Map<String, dynamic> company) async {
     var dbClient = await db;
@@ -231,7 +200,6 @@ class DBHelper {
 
   Future<List<Map<String, dynamic>>> getTours({String? empresa}) async {
     var dbClient = await db;
-
     if (empresa != null) {
       return await dbClient.query(
         'tours',
@@ -240,7 +208,6 @@ class DBHelper {
         orderBy: 'id DESC',
       );
     }
-
     return await dbClient.query('tours', orderBy: 'id DESC');
   }
 
