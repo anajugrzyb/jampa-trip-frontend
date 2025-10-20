@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'account_page.dart';
 import 'tourlist_page.dart';
+import '../data/db_helper.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final String userName;
   final String userEmail;
 
@@ -11,6 +13,43 @@ class HomePage extends StatelessWidget {
     required this.userName,
     required this.userEmail,
   });
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<Map<String, dynamic>> _recentTours = [];
+  List<Map<String, dynamic>> _companies = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final db = DBHelper();
+    final tours = await db.getTours(); 
+    final companies = await db.getCompanies(); 
+
+    setState(() {
+      _recentTours = tours.reversed.take(5).toList();
+      _companies = companies;
+    });
+  }
+
+  ImageProvider _buildImageProvider(String? path) {
+    if (path == null || path.isEmpty) {
+      return const AssetImage("lib/assets/images/default.jpg");
+    }
+
+    if (path.contains('/data/') || path.contains('/storage/')) {
+      return FileImage(File(path));
+    }
+
+    return AssetImage(path);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +70,7 @@ class HomePage extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      "Olá, $userName 👋\nExplore o melhor de João Pessoa!",
+                      "Olá, ${widget.userName} 👋\nExplore o melhor de João Pessoa!",
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -59,7 +98,7 @@ class HomePage extends StatelessWidget {
                   }
                 },
                 decoration: InputDecoration(
-                  hintText: "Buscar passeios...",
+                  hintText: "Buscar passeios ou empresas...",
                   hintStyle: const TextStyle(color: Colors.white70),
                   prefixIcon: const Icon(Icons.search, color: Colors.white),
                   filled: true,
@@ -85,39 +124,20 @@ class HomePage extends StatelessWidget {
                     topRight: Radius.circular(26),
                   ),
                 ),
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildSectionTitle("Destaques do dia"),
-                      _buildHorizontalList([
-                        {
-                          "img": "lib/assets/images/coqueirinho.jpeg",
-                          "title": "Praia de Coqueirinho"
-                        },
-                        {
-                          "img": "lib/assets/images/letreiro.jpeg",
-                          "title": "Pacote com desconto"
-                        },
-                        {
-                          "img": "lib/assets/images/centrojoaopessoa.jpeg",
-                          "title": "Centro Histórico"
-                        },
-                      ]),
-
-                      _buildSectionTitle("Populares perto de você"),
-                      _buildHorizontalList([
-                        {
-                          "img": "lib/assets/images/tambaba.jpeg",
-                          "title": "Praia de Tambaba"
-                        },
-                        {
-                          "img": "lib/assets/images/piscinasnaturais.jpeg",
-                          "title": "Piscinas Naturais"
-                        },
-                      ]),
-                    ],
+                child: RefreshIndicator(
+                  onRefresh: _loadData,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(bottom: 80),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSectionTitle("Anúncios Recentes"),
+                        _buildRecentTours(),
+                        _buildSectionTitle("Empresas Parceiras"),
+                        _buildCompanyList(),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -150,8 +170,8 @@ class HomePage extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AccountPage(
-                    userName: userName,
-                    userEmail: userEmail,
+                    userName: widget.userName,
+                    userEmail: widget.userEmail,
                     valorTotal: 0.0,
                   ),
                 ),
@@ -162,6 +182,7 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+
 
   Widget _buildSectionTitle(String title) {
     return Padding(
@@ -177,52 +198,116 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildHorizontalList(List<Map<String, String>> items) {
+  Widget _buildRecentTours() {
+    if (_recentTours.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Text("Nenhum anúncio recente encontrado."),
+        ),
+      );
+    }
+
     return SizedBox(
-      height: 160,
+      height: 220,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: items.length,
         padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: _recentTours.length,
         itemBuilder: (context, index) {
-          final item = items[index];
-          return Container(
-            width: 160,
-            margin: const EdgeInsets.only(right: 12),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              image: DecorationImage(
-                image: AssetImage(item["img"]!),
-                fit: BoxFit.cover,
-              ),
-              boxShadow: const [
-                BoxShadow(
-                    color: Colors.black26, blurRadius: 5, offset: Offset(0, 3)),
-              ],
-            ),
+          final tour = _recentTours[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => TourListPage(query: tour["nome"])),
+              );
+            },
             child: Container(
-              alignment: Alignment.bottomLeft,
-              padding: const EdgeInsets.all(10),
+              width: 180,
+              margin: const EdgeInsets.only(right: 12),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                gradient: const LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [Colors.black54, Colors.transparent],
+                image: DecorationImage(
+                  image: _buildImageProvider(tour["imagens"]),
+                  fit: BoxFit.cover,
                 ),
               ),
-              child: Text(
-                item["title"]!,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: const LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [Colors.black54, Colors.transparent],
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      tour["nome"] ?? "Passeio",
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15),
+                    ),
+                    Text(
+                      "R\$ ${tour["preco"] ?? "0,00"}",
+                      style: const TextStyle(color: Colors.white70, fontSize: 13),
+                    ),
+                  ],
                 ),
               ),
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildCompanyList() {
+    if (_companies.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Text("Nenhuma empresa cadastrada."),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _companies.length,
+      itemBuilder: (context, index) {
+        final company = _companies[index];
+        return ListTile(
+          leading: CircleAvatar(
+            radius: 28,
+            backgroundImage: _buildImageProvider(company["logo"]),
+          ),
+          title: Text(
+            company["company_name"] ?? "Empresa",
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(
+            "Avaliação: ${company["avaliacao"]?.toStringAsFixed(1) ?? "N/A"} ⭐",
+            style: const TextStyle(color: Colors.grey),
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => TourListPage(query: company["company_name"]),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -244,31 +329,6 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _CategoryIcon extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _CategoryIcon({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 28,
-          backgroundColor: const Color(0xFFE6F0FF),
-          child: Icon(icon, color: const Color(0xFF001E6C), size: 28),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, color: Colors.black87),
-        ),
-      ],
     );
   }
 }

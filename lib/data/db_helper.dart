@@ -20,7 +20,7 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 9,
+      version: 10, 
       onCreate: (db, version) async {
         await _createTables(db);
       },
@@ -98,6 +98,18 @@ class DBHelper {
             await db.execute('ALTER TABLE reservas ADD COLUMN valor_total REAL');
           } catch (_) {}
         }
+
+        if (oldVersion < 10) {
+          try {
+            await db.execute('ALTER TABLE companies ADD COLUMN logo TEXT');
+          } catch (_) {}
+          try {
+            await db.execute('ALTER TABLE companies ADD COLUMN avaliacao REAL DEFAULT 0');
+          } catch (_) {}
+          try {
+            await db.execute('ALTER TABLE companies ADD COLUMN descricao TEXT');
+          } catch (_) {}
+        }
       },
     );
   }
@@ -118,7 +130,10 @@ class DBHelper {
         company_name TEXT,
         cnpj TEXT,
         email TEXT,
-        password TEXT
+        password TEXT,
+        logo TEXT,
+        avaliacao REAL DEFAULT 0,
+        descricao TEXT
       )
     ''');
 
@@ -200,6 +215,14 @@ class DBHelper {
     return result.isNotEmpty ? result.first : null;
   }
 
+  Future<List<Map<String, dynamic>>> getCompanies() async {
+    final dbClient = await db;
+    return await dbClient.query(
+      'companies',
+      orderBy: 'id DESC',
+    );
+  }
+
   // ---------------------- TOURS ----------------------
   Future<int> insertTour(Map<String, dynamic> tour) async {
     var dbClient = await db;
@@ -271,7 +294,6 @@ class DBHelper {
     return await dbClient.query('cards', orderBy: 'id DESC');
   }
 
-  /// 🔥 Novo método: deletar um cartão pelo ID
   Future<int> deleteCard(int id) async {
     final dbClient = await db;
     return await dbClient.delete(
@@ -281,7 +303,6 @@ class DBHelper {
     );
   }
 
-  /// Limpa todos os cartões cadastrados
   Future<void> clearAllCards() async {
     final dbClient = await db;
     await dbClient.delete('cards');
