@@ -4,7 +4,7 @@ import '../data/db_helper.dart';
 import 'addtour_page.dart';
 
 class MyToursPage extends StatefulWidget {
-  final String userName; 
+  final String userName;
   const MyToursPage({super.key, required this.userName});
 
   @override
@@ -28,236 +28,252 @@ class _MyToursPageState extends State<MyToursPage> {
     });
   }
 
+  Widget _buildImage(String path) {
+    final file = File(path);
+    if (file.existsSync()) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.file(
+          file,
+          width: double.infinity,
+          height: 180,
+          fit: BoxFit.cover,
+        ),
+      );
+    } else {
+      return Container(
+        height: 180,
+        decoration: BoxDecoration(
+          color: Colors.blue[100],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        alignment: Alignment.center,
+        child: const Icon(Icons.image_not_supported, size: 50, color: Colors.white),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF00008B),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color(0xFF00008B),
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
+        centerTitle: true,
         title: const Text(
           "Meus Passeios",
-          style: TextStyle(color: Colors.white, fontSize: 16),
+          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        centerTitle: true,
       ),
-      extendBodyBehindAppBar: true,
-      body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 24),
-            const CircleAvatar(
-              radius: 45,
-              backgroundImage: AssetImage("assets/profile.jpg"),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              widget.userName,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+      body: _tours.isEmpty
+          ? const Center(
+              child: Text(
+                "Nenhum passeio cadastrado ainda.",
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
-            ),
-            const Text(
-              "Passeios",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: _tours.isEmpty
-                  ? const Center(
-                      child: Text(
-                        "Nenhum passeio cadastrado ainda.",
-                        style: TextStyle(color: Colors.white, fontSize: 14),
-                      ),
-                    )
-                  : ListView.builder(
-                      itemCount: _tours.length,
-                      itemBuilder: (context, index) {
-                        final t = _tours[index];
-                        final imagens = (t['imagens'] as String?)?.split(',') ?? [];
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _tours.length,
+              itemBuilder: (context, index) {
+                final t = _tours[index];
+                final imagens = (t['imagens'] as String?)?.split(',') ?? [];
 
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.blue[800],
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  imagens.isNotEmpty && imagens.first.isNotEmpty
-                                      ? ClipRRect(
-                                          borderRadius: BorderRadius.circular(8),
-                                          child: Image.file(
-                                            File(imagens.first),
-                                            width: 80,
-                                            height: 80,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        )
-                                      : Container(
-                                          width: 80,
-                                          height: 80,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey,
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          child: const Icon(Icons.image, color: Colors.white),
-                                        ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "${t['nome']}",
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          "Saída: ${t['saida']}\nRetorno: ${t['chegada']}",
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: () async {
-                                        final result = await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => AddTourPage(
-                                              tourToEdit: t,
-                                              userName: widget.userName, 
-                                            ),
-                                          ),
-                                        );
-                                        if (result == true) {
-                                          _carregarPasseios();
-                                        }
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.blueAccent,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        padding: const EdgeInsets.symmetric(vertical: 12),
-                                      ),
-                                      child: const Text("Editar"),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  ElevatedButton(
-                                    onPressed: () async {
-                                      final confirm = await showDialog<bool>(
-                                        context: context,
-                                        builder: (context) => AlertDialog(
-                                          title: const Text("Excluir passeio"),
-                                          content: const Text("Deseja realmente excluir este passeio?"),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () => Navigator.pop(context, false),
-                                              child: const Text("Cancelar"),
-                                            ),
-                                            TextButton(
-                                              onPressed: () => Navigator.pop(context, true),
-                                              child: const Text("Excluir"),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                      if (confirm == true) {
-                                        await DBHelper().deleteTour(t['id']);
-                                        _carregarPasseios();
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.redAccent,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                    ),
-                                    child: const Icon(Icons.delete, color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                return Dismissible(
+                  key: Key(t['id'].toString()),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      borderRadius: BorderRadius.circular(16),
                     ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AddTourPage(
-                              userName: widget.userName, 
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: const Icon(Icons.delete, color: Colors.white, size: 28),
+                  ),
+                  confirmDismiss: (direction) async {
+                    return await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text("Excluir passeio"),
+                        content: const Text("Deseja realmente excluir este passeio?"),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text("Cancelar"),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text("Excluir", style: TextStyle(color: Colors.red)),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  onDismissed: (direction) async {
+                    await DBHelper().deleteTour(t['id']);
+                    _carregarPasseios();
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Passeio '${t['nome']}' excluído com sucesso."),
+                        backgroundColor: Colors.redAccent,
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    color: Colors.white,
+                    elevation: 6,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    margin: const EdgeInsets.only(bottom: 20),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // imagens
+                          if (imagens.isNotEmpty)
+                            SizedBox(
+                              height: 180,
+                              child: PageView.builder(
+                                itemCount: imagens.length,
+                                controller: PageController(viewportFraction: 0.9),
+                                itemBuilder: (context, index) => Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  child: _buildImage(imagens[index]),
+                                ),
+                              ),
+                            ),
+                          const SizedBox(height: 12),
+
+                          // nome do passeio
+                          Text(
+                            t['nome'] ?? '',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue[900],
                             ),
                           ),
-                        );
-                        if (result == true) {
-                          _carregarPasseios();
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        "Cadastrar passeio",
-                        style: TextStyle(fontSize: 16),
+                          const SizedBox(height: 8),
+
+                          // informações
+                          Row(
+                            children: [
+                              Icon(Icons.departure_board, color: Colors.blue[700], size: 20),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  "Saída: ${t['saida']}",
+                                  style: const TextStyle(fontSize: 14, color: Colors.black87),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Icon(Icons.flag, color: Colors.blue[700], size: 20),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  "Chegada: ${t['chegada']}",
+                                  style: const TextStyle(fontSize: 14, color: Colors.black87),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Icon(Icons.people, color: Colors.blue[700], size: 20),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  "Qtd. pessoas: ${t['qtd_pessoas'] ?? '-'}",
+                                  style: const TextStyle(fontSize: 14, color: Colors.black87),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Divider(height: 20),
+
+                          Row(
+                            children: [
+                              const Icon(Icons.attach_money, color: Colors.green, size: 22),
+                              const SizedBox(width: 6),
+                              Text(
+                                "Preço: R\$ ${t['preco']?.toStringAsFixed(2) ?? '0,00'}",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // botão editar
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () async {
+                                final result = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AddTourPage(
+                                      tourToEdit: t,
+                                      userName: widget.userName,
+                                    ),
+                                  ),
+                                );
+                                if (result == true) _carregarPasseios();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue[400],
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 3,
+                              ),
+                              icon: const Icon(Icons.edit, color: Colors.white, size: 20),
+                              label: const Text(
+                                "Editar",
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                ],
-              ),
+                );
+              },
             ),
-          ],
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Colors.blue[400],
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text(
+          "Cadastrar passeio",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddTourPage(userName: widget.userName),
+            ),
+          );
+          if (result == true) _carregarPasseios();
+        },
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
