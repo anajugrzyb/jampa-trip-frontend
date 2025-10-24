@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:jampa_trip/pages/myreservation_page.dart';
 import 'login_page.dart';
 import 'informationuser_page.dart';
 import 'feedback_page.dart';
@@ -156,7 +157,14 @@ class _AccountPageState extends State<AccountPage> {
                       icon: Icons.bookmark,
                       title: "Reservas",
                       subtitle: "Minhas reservas, cancelamentos",
-                      onTap: () {},
+                      onTap: () {Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                MyReservationsPage(),
+                          ),
+                        );
+                      },
                     ),
                     _buildMenuItem(
                       icon: Icons.history,

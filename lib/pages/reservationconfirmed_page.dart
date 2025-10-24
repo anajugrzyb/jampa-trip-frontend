@@ -1,10 +1,24 @@
 import 'package:flutter/material.dart';
+import '../data/db_helper.dart';
+import 'myreservation_page.dart';
 
 class ReservationConfirmedPage extends StatelessWidget {
-  const ReservationConfirmedPage({super.key});
+  final Map<String, dynamic> reserva;
+
+  const ReservationConfirmedPage({
+    super.key,
+    required this.reserva,
+  });
+
+  Future<void> _salvarReserva() async {
+    final db = DBHelper();
+    await db.insertReserva(reserva);
+  }
 
   @override
   Widget build(BuildContext context) {
+    _salvarReserva(); // salva automaticamente ao abrir a tela
+
     return Scaffold(
       backgroundColor: const Color(0xFF00008B),
       appBar: AppBar(
@@ -59,11 +73,16 @@ class ReservationConfirmedPage extends StatelessWidget {
                   const SizedBox(height: 40),
                   ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.popUntil(context, (route) => route.isFirst);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const MyReservationsPage(),
+                        ),
+                      );
                     },
-                    icon: const Icon(Icons.home, color: Colors.white),
+                    icon: const Icon(Icons.list, color: Colors.white),
                     label: const Text(
-                      "Voltar ao início",
+                      "Ver Minhas Reservas",
                       style: TextStyle(color: Colors.white),
                     ),
                     style: ElevatedButton.styleFrom(

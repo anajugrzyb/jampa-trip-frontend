@@ -196,6 +196,7 @@ class _ReservationPageState extends State<ReservationPage> {
         MaterialPageRoute(
           builder: (context) => MetodoPagamentoPage(
             valorTotal: _valorTotal,
+            reserva: reserva,
           ),
         ),
       );

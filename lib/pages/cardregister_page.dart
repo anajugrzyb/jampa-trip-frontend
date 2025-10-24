@@ -4,8 +4,9 @@ import 'reservationconfirmed_page.dart';
 
 class CardRegisterPage extends StatefulWidget {
   final double valorTotal;
+  final Map<String, dynamic> reserva;
 
-  const CardRegisterPage({super.key, required this.valorTotal});
+  const CardRegisterPage({super.key, required this.valorTotal, required this.reserva});
 
   @override
   State<CardRegisterPage> createState() => _CardRegisterPageState();
@@ -120,7 +121,7 @@ class _CardRegisterPageState extends State<CardRegisterPage> {
     Future.delayed(const Duration(seconds: 1), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const ReservationConfirmedPage()),
+        MaterialPageRoute(builder: (_) => ReservationConfirmedPage(reserva: widget.reserva)),
       );
     });
   }

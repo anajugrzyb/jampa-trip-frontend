@@ -6,8 +6,9 @@ import 'reservationconfirmed_page.dart';
 
 class MetodoPagamentoPage extends StatefulWidget {
   final double valorTotal;
+  final Map<String, dynamic> reserva;
 
-  const MetodoPagamentoPage({super.key, required this.valorTotal});
+  const MetodoPagamentoPage({super.key, required this.valorTotal, required this.reserva});
 
   @override
   State<MetodoPagamentoPage> createState() => _MetodoPagamentoPageState();
@@ -35,7 +36,7 @@ class _MetodoPagamentoPageState extends State<MetodoPagamentoPage> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => CardRegisterPage(valorTotal: widget.valorTotal),
+        builder: (_) => CardRegisterPage(valorTotal: widget.valorTotal, reserva: widget.reserva),
       ),
     );
     _loadCards();
@@ -211,7 +212,7 @@ class _MetodoPagamentoPageState extends State<MetodoPagamentoPage> {
                           context,
                           MaterialPageRoute(
                             builder: (_) =>
-                                const ReservationConfirmedPage(),
+                                ReservationConfirmedPage(reserva: widget.reserva),
                           ),
                         );
                       });
