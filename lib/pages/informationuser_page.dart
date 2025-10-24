@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jampa_trip/data/db_helper.dart';
 
 class InformationUserPage extends StatefulWidget {
-  final String email; 
+  final String email;
 
   const InformationUserPage({super.key, required this.email});
 
@@ -64,129 +64,126 @@ class _InformationUserPageState extends State<InformationUserPage> {
       const SnackBar(
         content: Text(
           'Informações atualizadas com sucesso!',
-          style: TextStyle(
-            color: Colors.white,
-          ),
+          style: TextStyle(color: Colors.white),
         ),
+        backgroundColor: Colors.green,
       ),
     );
     Navigator.pop(context);
   }
 
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    bool obscure = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: TextFormField(
+        controller: controller,
+        obscureText: obscure,
+        style: const TextStyle(color: Colors.black),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(
+            color: Color(0xFF4169E1),
+            fontWeight: FontWeight.bold,
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        validator: (value) =>
+            value!.isEmpty ? "Campo obrigatório: $label" : null,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF000080),
+      backgroundColor: const Color(0xFF00008B),
       appBar: AppBar(
-        title: const Text("Informações do Usuário", 
-        style: TextStyle(
-           color: Colors.white, fontSize: 16)),
-        backgroundColor: const Color(0xFF4169E1),
+        title: const Text(
+          "Informações do Usuário",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF00008B),
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _user == null
           ? const Center(child: CircularProgressIndicator(color: Colors.white))
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    const Text(
-                      "Atualize suas informações",
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    TextFormField(
-                      controller: nameController,
-                      style: const TextStyle(color: Colors.black),
-                      decoration: InputDecoration(
-                        labelText: "Nome completo",
-                        labelStyle: const TextStyle(
-                          color: Color.fromARGB(255, 90, 124, 225),
-                          fontWeight: FontWeight.bold,
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      validator: (value) =>
-                          value!.isEmpty ? "Digite seu nome" : null,
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    TextFormField(
-                      controller: emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      style: const TextStyle(color: Colors.black),
-                      decoration: InputDecoration(
-                        labelText: "Email",
-                        labelStyle: const TextStyle(
-                          color: const Color.fromARGB(255, 90, 124, 225),
-                          fontWeight: FontWeight.bold,
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      validator: (value) =>
-                          value!.isEmpty ? "Digite seu email" : null,
-                    ),
-                    const SizedBox(height: 16),
-
-                    TextFormField(
-                      controller: passwordController,
-                      obscureText: true,
-                      style: const TextStyle(color: Colors.black),
-                      decoration: InputDecoration(
-                        labelText: "Senha",
-                        labelStyle: const TextStyle(
-                          color: const Color.fromARGB(255, 90, 124, 225),
-                          fontWeight: FontWeight.bold,
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      validator: (value) =>
-                          value!.isEmpty ? "Digite sua senha" : null,
-                    ),
-                    const SizedBox(height: 24),
-
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _updateUser,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF4169E1),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          "Salvar Alterações",
+              padding: const EdgeInsets.all(16),
+              child: Card(
+                color: Colors.white,
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Text(
+                          "Atualize suas informações",
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: Color(0xFF00008B),
                           ),
                         ),
-                      ),
+                        const SizedBox(height: 20),
+
+                        _buildTextField(
+                            label: "Nome completo", controller: nameController),
+                        _buildTextField(
+                            label: "Email", controller: emailController),
+                        _buildTextField(
+                          label: "Senha",
+                          controller: passwordController,
+                          obscure: true,
+                        ),
+
+                        const SizedBox(height: 30),
+
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: _updateUser,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue[400],
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 5,
+                            ),
+                            icon: const Icon(Icons.save, color: Colors.white),
+                            label: const Text(
+                              "Salvar Alterações",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
