@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jampa_trip/pages/informationcompany_page.dart';
 import 'mytours_page.dart';
 import 'login_page.dart';
 
@@ -62,7 +63,14 @@ class AccountCompanyPage extends StatelessWidget {
                       icon: Icons.person,
                       title: "Login",
                       subtitle: "Informações de login",
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => InformationCompanyPage(email: userName),
+                          ),
+                        );
+                      },
                     ),
                     _buildMenuItem(
                       icon: Icons.notification_add,
