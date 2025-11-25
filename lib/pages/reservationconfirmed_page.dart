@@ -12,12 +12,17 @@ class ReservationConfirmedPage extends StatelessWidget {
 
   Future<void> _salvarReserva() async {
     final db = DBHelper();
-    await db.insertReserva(reserva);
+    final reservaComStatus = {
+      ...reserva,
+      'status': reserva['status'] ?? 'pendente',
+    };
+
+    await db.insertReserva(reservaComStatus);
   }
 
   @override
   Widget build(BuildContext context) {
-    _salvarReserva(); // salva automaticamente ao abrir a tela
+    _salvarReserva(); 
 
     return Scaffold(
       backgroundColor: const Color(0xFF00008B),

@@ -20,7 +20,7 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 13, 
+      version: 14, 
       onCreate: (db, version) async {
         await _createTables(db);
       },
@@ -60,9 +60,18 @@ class DBHelper {
             await db.execute('ALTER TABLE companies ADD COLUMN logo TEXT');
           } catch (_) {}
         }
+
+        if (oldVersion < 14) {
+          try {
+            await db.execute(
+                "ALTER TABLE reservas ADD COLUMN status TEXT DEFAULT 'pendente'");
+          } catch (_) {}
+        }
       },
+
     );
   }
+
 
   Future<void> _createTables(Database db) async {
     await db.execute('''
@@ -117,6 +126,7 @@ class DBHelper {
         tour_nome TEXT,
         empresa TEXT,
         valor_total REAL,
+        status TEXT DEFAULT 'pendente',
         FOREIGN KEY (tour_id) REFERENCES tours (id) ON DELETE CASCADE
       )
     ''');
@@ -256,6 +266,26 @@ class DBHelper {
   Future<List<Map<String, dynamic>>> getReservas() async {
     final dbClient = await db;
     return await dbClient.query('reservas', orderBy: 'id DESC');
+  }
+
+  Future<List<Map<String, dynamic>>> getReservasPorEmpresa(String empresa) async {
+    final dbClient = await db;
+    return await dbClient.query(
+      'reservas',
+      where: 'empresa = ?',
+      whereArgs: [empresa],
+      orderBy: 'id DESC',
+    );
+  }
+
+  Future<int> updateReservaStatus(int id, String status) async {
+    final dbClient = await db;
+    return await dbClient.update(
+      'reservas',
+      {'status': status},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   Future<int> deleteReserva(int id) async {

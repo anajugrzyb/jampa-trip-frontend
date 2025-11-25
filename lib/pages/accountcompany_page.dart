@@ -5,6 +5,7 @@ import '../data/db_helper.dart';
 import 'informationcompany_page.dart';
 import 'mytours_page.dart';
 import 'login_page.dart';
+import 'company_reservations_page.dart';
 
 class AccountCompanyPage extends StatefulWidget {
   final String userName;
@@ -160,7 +161,16 @@ class _AccountCompanyPageState extends State<AccountCompanyPage> {
                       icon: Icons.bookmark,
                       title: "Reservas",
                       subtitle: "Minhas reservas, cancelamentos",
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CompanyReservationsPage(
+                              companyName: widget.userName,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     _buildMenuItem(
                       icon: Icons.history,

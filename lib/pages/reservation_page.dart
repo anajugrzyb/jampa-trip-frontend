@@ -180,6 +180,7 @@ class _ReservationPageState extends State<ReservationPage> {
         "tour_nome": widget.tour['nome'],
         "empresa": widget.tour['empresa'],
         "valor_total": _valorTotal,
+        "status": "pendente",
       };
 
       await db.insertReserva(reserva);
