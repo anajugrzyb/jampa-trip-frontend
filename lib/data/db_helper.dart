@@ -20,7 +20,7 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 14, 
+      version: 15,
       onCreate: (db, version) async {
         await _createTables(db);
       },
@@ -66,6 +66,10 @@ class DBHelper {
             await db.execute(
                 "ALTER TABLE reservas ADD COLUMN status TEXT DEFAULT 'pendente'");
           } catch (_) {}
+        }
+
+        if (oldVersion < 15) {
+          await _createFeedbackTable(db);
         }
       },
 
@@ -141,6 +145,19 @@ class DBHelper {
         cvv TEXT
       )
     ''');
+
+    await _createFeedbackTable(db);
+  }
+
+  Future<void> _createFeedbackTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS feedbacks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        rating INTEGER,
+        comment TEXT,
+        created_at TEXT
+      )
+    ''');
   }
 
   Future<int> insertUser(Map<String, dynamic> user) async {
@@ -182,6 +199,23 @@ class DBHelper {
   Future<int> insertCompany(Map<String, dynamic> company) async {
     final dbClient = await db;
     return await dbClient.insert('companies', company);
+  }
+
+  Future<int> insertFeedback({required int rating, required String comment}) async {
+    final dbClient = await db;
+    return await dbClient.insert('feedbacks', {
+      'rating': rating,
+      'comment': comment,
+      'created_at': DateTime.now().toIso8601String(),
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getFeedbacks() async {
+    final dbClient = await db;
+    return await dbClient.query(
+      'feedbacks',
+      orderBy: 'created_at DESC',
+    );
   }
 
   Future<Map<String, dynamic>?> getCompany(String email, String password) async {

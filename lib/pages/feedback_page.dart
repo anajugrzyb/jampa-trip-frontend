@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../data/db_helper.dart';
+
 class FeedbackPage extends StatefulWidget {
   const FeedbackPage({super.key});
 
@@ -9,9 +11,33 @@ class FeedbackPage extends StatefulWidget {
 
 class _FeedbackPageState extends State<FeedbackPage> {
   int _rating = 0;
+  bool _isSubmitting = false;
+  bool _isLoading = true;
+  final DBHelper _dbHelper = DBHelper();
   final TextEditingController _controller = TextEditingController();
+  List<Map<String, dynamic>> _feedbacks = [];
 
-  void _submitFeedback() {
+  @override
+  void initState() {
+    super.initState();
+    _loadFeedbacks();
+  }
+
+  Future<void> _loadFeedbacks() async {
+    final feedbacks = await _dbHelper.getFeedbacks();
+    if (mounted) {
+      setState(() {
+        _feedbacks = feedbacks;
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _submitFeedback() async {
+    if (_isSubmitting) return;
+
+    final comment = _controller.text.trim();
+
     if (_rating == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -20,6 +46,20 @@ class _FeedbackPageState extends State<FeedbackPage> {
       );
       return;
     }
+
+    if (comment.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Por favor, escreva um comentário antes de enviar."),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    await _dbHelper.insertFeedback(rating: _rating, comment: comment);
+    await _loadFeedbacks();
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -30,7 +70,14 @@ class _FeedbackPageState extends State<FeedbackPage> {
     setState(() {
       _rating = 0;
       _controller.clear();
+      _isSubmitting = false;
     });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -133,7 +180,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                       width: double.infinity,
                       height: 48,
                       child: ElevatedButton.icon(
-                        onPressed: _submitFeedback,
+                        onPressed: _isSubmitting ? null : _submitFeedback,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: azulClaro,
                           elevation: 4,
@@ -142,9 +189,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
                           ),
                         ),
                         icon: const Icon(Icons.send_rounded, color: Colors.white),
-                        label: const Text(
-                          "Enviar comentário",
-                          style: TextStyle(
+                        label: Text(
+                          _isSubmitting ? "Enviando..." : "Enviar comentário",
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
@@ -158,13 +205,93 @@ class _FeedbackPageState extends State<FeedbackPage> {
             ),
 
             const SizedBox(height: 20),
-           
+
+            Card(
+              color: Colors.white,
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Feedbacks enviados",
+                      style: TextStyle(
+                        color: azulEscuro,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    if (_isLoading)
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    else if (_feedbacks.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: Text(
+                          "Você ainda não enviou nenhum feedback.",
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                      )
+                    else
+                      ListView.separated(
+                        itemCount: _feedbacks.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        separatorBuilder: (_, __) => const Divider(),
+                        itemBuilder: (context, index) {
+                          final item = _feedbacks[index];
+                          final createdAt = DateTime.tryParse(
+                                  item['created_at']?.toString() ?? '') ??
+                              DateTime.now();
+
+                          return ListTile(
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                            leading: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: List.generate(
+                                5,
+                                (i) => Icon(
+                                  Icons.star_rounded,
+                                  size: 20,
+                                  color: i < (item['rating'] as int? ?? 0)
+                                      ? Colors.amber
+                                      : Colors.grey[300],
+                                ),
+                              ),
+                            ),
+                            title: Text(
+                              item['comment'] as String? ?? '',
+                              style: const TextStyle(
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            subtitle: Text(
+                              "Enviado em ${createdAt.day.toString().padLeft(2, '0')}/${createdAt.month.toString().padLeft(2, '0')}/${createdAt.year}",
+                              style: const TextStyle(color: Colors.black54),
+                            ),
+                          );
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ),
+
           ],
         ),
       ),
     );
   }
-
-
-  }
+}
 
