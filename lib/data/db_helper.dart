@@ -20,7 +20,7 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 15,
+      version: 16,
       onCreate: (db, version) async {
         await _createTables(db);
       },
@@ -70,6 +70,15 @@ class DBHelper {
 
         if (oldVersion < 15) {
           await _createFeedbackTable(db);
+        }
+
+        if (oldVersion < 16) {
+          try {
+            await db.execute('ALTER TABLE feedbacks ADD COLUMN company TEXT');
+          } catch (_) {}
+          try {
+            await db.execute('ALTER TABLE feedbacks ADD COLUMN tour_nome TEXT');
+          } catch (_) {}
         }
       },
 
@@ -155,6 +164,8 @@ class DBHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         rating INTEGER,
         comment TEXT,
+        company TEXT,
+        tour_nome TEXT,
         created_at TEXT
       )
     ''');
@@ -201,21 +212,52 @@ class DBHelper {
     return await dbClient.insert('companies', company);
   }
 
-  Future<int> insertFeedback({required int rating, required String comment}) async {
+  Future<int> insertFeedback({
+    required int rating,
+    required String comment,
+    required String company,
+    String? tourName,
+  }) async {
     final dbClient = await db;
     return await dbClient.insert('feedbacks', {
       'rating': rating,
       'comment': comment,
+      'company': company,
+      'tour_nome': tourName,
       'created_at': DateTime.now().toIso8601String(),
     });
   }
 
-  Future<List<Map<String, dynamic>>> getFeedbacks() async {
+  Future<List<Map<String, dynamic>>> getFeedbacks({String? company}) async {
     final dbClient = await db;
+    if (company != null && company.isNotEmpty) {
+      return await dbClient.query(
+        'feedbacks',
+        where: 'company = ?',
+        whereArgs: [company],
+        orderBy: 'created_at DESC',
+      );
+    }
+
     return await dbClient.query(
       'feedbacks',
       orderBy: 'created_at DESC',
     );
+  }
+
+  Future<double> getAverageRatingForCompany(String company) async {
+    final dbClient = await db;
+    final result = await dbClient.rawQuery(
+      'SELECT AVG(rating) as avg_rating FROM feedbacks WHERE company = ?',
+      [company],
+    );
+
+    final avgValue = result.first['avg_rating'];
+    if (avgValue == null) return 0;
+
+    if (avgValue is double) return avgValue;
+    if (avgValue is int) return avgValue.toDouble();
+    return double.tryParse(avgValue.toString()) ?? 0;
   }
 
   Future<Map<String, dynamic>?> getCompany(String email, String password) async {
