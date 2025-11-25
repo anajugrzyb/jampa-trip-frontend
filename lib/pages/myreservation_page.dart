@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../data/db_helper.dart';
+import 'feedback_page.dart';
 
 class MyReservationsPage extends StatefulWidget {
   const MyReservationsPage({super.key});
@@ -239,15 +240,43 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                             const SizedBox(height: 10),
                             Align(
                               alignment: Alignment.centerRight,
-                              child: TextButton.icon(
-                                onPressed: () =>
-                                    _showCancelDialog(reserva['id']),
-                                icon: const Icon(Icons.cancel,
-                                    color: Colors.redAccent),
-                                label: const Text(
-                                  "Cancelar",
-                                  style: TextStyle(color: Colors.redAccent),
-                                ),
+                              child: Wrap(
+                                spacing: 8,
+                                children: [
+                                  if (status.toLowerCase() == 'aprovado')
+                                    TextButton.icon(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => FeedbackPage(
+                                              companyName:
+                                                  reserva['empresa'] as String?,
+                                              tourName:
+                                                  reserva['tour_nome'] as String?,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      icon: const Icon(Icons.star_rate,
+                                          color: Color(0xFF00008B)),
+                                      label: const Text(
+                                        "Deixar feedback",
+                                        style:
+                                            TextStyle(color: Color(0xFF00008B)),
+                                      ),
+                                    ),
+                                  TextButton.icon(
+                                    onPressed: () =>
+                                        _showCancelDialog(reserva['id']),
+                                    icon: const Icon(Icons.cancel,
+                                        color: Colors.redAccent),
+                                    label: const Text(
+                                      "Cancelar",
+                                      style: TextStyle(color: Colors.redAccent),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],

@@ -14,11 +14,14 @@ class CompanyPage extends StatefulWidget {
 
 class _CompanyPageState extends State<CompanyPage> {
   List<Map<String, dynamic>> _tours = [];
+  List<Map<String, dynamic>> _feedbacks = [];
+  double _averageRating = 0;
 
   @override
   void initState() {
     super.initState();
     _carregarAnuncios();
+    _carregarFeedbacks();
   }
 
   Future<void> _carregarAnuncios() async {
@@ -26,6 +29,19 @@ class _CompanyPageState extends State<CompanyPage> {
     final data = await db.getTours(empresa: widget.company['company_name']);
     setState(() {
       _tours = data;
+    });
+  }
+
+  Future<void> _carregarFeedbacks() async {
+    final db = DBHelper();
+    final feedbacks =
+        await db.getFeedbacks(company: widget.company['company_name']);
+    final average = await db
+        .getAverageRatingForCompany(widget.company['company_name'] ?? '');
+
+    setState(() {
+      _feedbacks = feedbacks;
+      _averageRating = average;
     });
   }
 
@@ -75,7 +91,7 @@ class _CompanyPageState extends State<CompanyPage> {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: Column(
+                              child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -89,16 +105,26 @@ class _CompanyPageState extends State<CompanyPage> {
                                 ),
                                 const SizedBox(height: 4),
                                 Row(
-                                  children: const [
-                                    Icon(Icons.star,
+                                  children: [
+                                    const Icon(Icons.star,
                                         color: Colors.amber, size: 18),
-                                    SizedBox(width: 4),
+                                    const SizedBox(width: 4),
                                     Text(
-                                      "4.8",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16),
+                                      _feedbacks.isEmpty
+                                          ? 'Sem avaliações'
+                                          : _averageRating
+                                              .toStringAsFixed(1),
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 16),
                                     ),
+                                    if (_feedbacks.isNotEmpty) ...[
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        '(${_feedbacks.length})',
+                                        style: const TextStyle(
+                                            color: Colors.white70, fontSize: 14),
+                                      ),
+                                    ]
                                   ],
                                 ),
                               ],
@@ -260,6 +286,81 @@ class _CompanyPageState extends State<CompanyPage> {
                     ),
                   );
                 },
+              ),
+            ),
+          ),
+
+          SliverToBoxAdapter(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Feedbacks",
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  const SizedBox(height: 12),
+                  Card(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(14.0),
+                      child: _feedbacks.isEmpty
+                          ? const Text(
+                              "Esta empresa ainda não possui feedbacks.",
+                              style: TextStyle(color: Colors.black54),
+                            )
+                          : Column(
+                              children: _feedbacks.map((feedback) {
+                                final rating = (feedback['rating'] as int?) ?? 0;
+                                final comment =
+                                    (feedback['comment'] as String?) ?? '';
+                                final tourName =
+                                    (feedback['tour_nome'] as String?) ?? '';
+
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: List.generate(
+                                        5,
+                                        (index) => Icon(
+                                          Icons.star_rounded,
+                                          size: 18,
+                                          color: index < rating
+                                              ? Colors.amber
+                                              : Colors.grey[300],
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    if (tourName.isNotEmpty)
+                                      Text(
+                                        tourName,
+                                        style: const TextStyle(
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                    Text(
+                                      comment,
+                                      style: const TextStyle(
+                                          color: Colors.black87,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    const Divider(height: 20),
+                                  ],
+                                );
+                              }).toList(),
+                            ),
+                    ),
+                  )
+                ],
               ),
             ),
           ),
