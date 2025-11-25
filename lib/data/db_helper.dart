@@ -20,12 +20,11 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 12, // ⬅️ atualizei a versão para garantir migração limpa
+      version: 13, 
       onCreate: (db, version) async {
         await _createTables(db);
       },
       onUpgrade: (db, oldVersion, newVersion) async {
-        // Controle refinado de atualizações para evitar duplicação de colunas
         if (oldVersion < 10) {
           try {
             await db.execute('ALTER TABLE companies ADD COLUMN logo TEXT');
@@ -55,12 +54,17 @@ class DBHelper {
             await db.execute('ALTER TABLE reservas ADD COLUMN valor_total REAL');
           } catch (_) {}
         }
+
+        if (oldVersion < 13) {
+          try {
+            await db.execute('ALTER TABLE companies ADD COLUMN logo TEXT');
+          } catch (_) {}
+        }
       },
     );
   }
 
   Future<void> _createTables(Database db) async {
-    // ---------------------- USERS ----------------------
     await db.execute('''
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -71,7 +75,6 @@ class DBHelper {
       )
     ''');
 
-    // ---------------------- COMPANIES ----------------------
     await db.execute('''
       CREATE TABLE IF NOT EXISTS companies (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -85,7 +88,6 @@ class DBHelper {
       )
     ''');
 
-    // ---------------------- TOURS ----------------------
     await db.execute('''
       CREATE TABLE IF NOT EXISTS tours (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -102,7 +104,6 @@ class DBHelper {
       )
     ''');
 
-    // ---------------------- RESERVAS ----------------------
     await db.execute('''
       CREATE TABLE IF NOT EXISTS reservas (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -120,7 +121,6 @@ class DBHelper {
       )
     ''');
 
-    // ---------------------- CARDS ----------------------
     await db.execute('''
       CREATE TABLE IF NOT EXISTS cards (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -133,7 +133,6 @@ class DBHelper {
     ''');
   }
 
-  // ---------------------- USERS ----------------------
   Future<int> insertUser(Map<String, dynamic> user) async {
     final dbClient = await db;
     return await dbClient.insert('users', user);
@@ -170,7 +169,6 @@ class DBHelper {
     return result.isNotEmpty ? result.first['profile_image'] as String? : null;
   }
 
-  // ---------------------- COMPANIES ----------------------
   Future<int> insertCompany(Map<String, dynamic> company) async {
     final dbClient = await db;
     return await dbClient.insert('companies', company);
@@ -186,12 +184,42 @@ class DBHelper {
     return result.isNotEmpty ? result.first : null;
   }
 
+  Future<Map<String, dynamic>?> getCompanyByEmail(String email) async {
+    final dbClient = await db;
+    final result = await dbClient.query(
+      'companies',
+      where: 'email = ?',
+      whereArgs: [email.trim()],
+    );
+    return result.isNotEmpty ? result.first : null;
+  }
+
   Future<List<Map<String, dynamic>>> getCompanies() async {
     final dbClient = await db;
     return await dbClient.query('companies', orderBy: 'id DESC');
   }
 
-  // ---------------------- TOURS ----------------------
+  Future<void> updateCompanyLogo(String email, String logoPath) async {
+    final dbClient = await db;
+    await dbClient.update(
+      'companies',
+      {'logo': logoPath},
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+  }
+
+  Future<String?> getCompanyLogo(String email) async {
+    final dbClient = await db;
+    final result = await dbClient.query(
+      'companies',
+      columns: ['logo'],
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+    return result.isNotEmpty ? result.first['logo'] as String? : null;
+  }
+
   Future<int> insertTour(Map<String, dynamic> tour) async {
     final dbClient = await db;
     return await dbClient.insert('tours', tour);
@@ -220,7 +248,6 @@ class DBHelper {
     return await dbClient.delete('tours', where: 'id = ?', whereArgs: [id]);
   }
 
-  // ---------------------- RESERVAS ----------------------
   Future<int> insertReserva(Map<String, dynamic> reserva) async {
     final dbClient = await db;
     return await dbClient.insert('reservas', reserva);
@@ -248,7 +275,7 @@ class DBHelper {
     return (total is int) ? total : int.tryParse(total.toString()) ?? 0;
   }
 
-  // ---------------------- CARDS ----------------------
+
   Future<int> insertCard(Map<String, dynamic> card) async {
     final dbClient = await db;
     return await dbClient.insert('cards', card);

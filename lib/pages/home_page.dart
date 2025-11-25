@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'account_page.dart';
 import 'tourlist_page.dart';
 import '../data/db_helper.dart';
@@ -21,13 +22,21 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> _recentTours = [];
   List<Map<String, dynamic>> _companies = [];
-  File? _userImage; 
+  File? _userImage;
+
+  final _pageController = PageController(viewportFraction: 0.85);
 
   @override
   void initState() {
     super.initState();
     _loadData();
     _loadUserImage();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -44,24 +53,20 @@ class _HomePageState extends State<HomePage> {
   Future<void> _loadUserImage() async {
     final db = DBHelper();
     final imagePath = await db.getUserImage(widget.userEmail);
-
-    if (imagePath != null && File(imagePath).existsSync()) {
-      setState(() {
-        _userImage = File(imagePath);
-      });
-    }
+    setState(() {
+      _userImage = (imagePath != null && File(imagePath).existsSync())
+          ? File(imagePath)
+          : null;
+    });
   }
 
   ImageProvider _buildImageProvider(String? path) {
     if (path == null || path.isEmpty) {
-      return const AssetImage("lib/assets/images/default.jpg");
+      return const AssetImage("assets/profile.jpg");
     }
-
-    if (path.contains('/data/') || path.contains('/storage/')) {
-      return FileImage(File(path));
-    }
-
-    return AssetImage(path);
+    return (path.contains('/data/') || path.contains('/storage/'))
+        ? FileImage(File(path))
+        : AssetImage(path);
   }
 
   @override
@@ -71,76 +76,20 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundImage: _userImage != null
-                        ? FileImage(_userImage!)
-                        : const AssetImage("lib/assets/images/profile.png")
-                            as ImageProvider,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      "Olá, ${widget.userName} 👋\nExplore o melhor de João Pessoa!",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        height: 1.3,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: TextField(
-                onSubmitted: (value) {
-                  if (value.trim().isNotEmpty) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            TourListPage(query: value.trim()),
-                      ),
-                    );
-                  }
-                },
-                decoration: InputDecoration(
-                  hintText: "Buscar passeios ou empresas...",
-                  hintStyle: const TextStyle(color: Colors.white70),
-                  prefixIcon: const Icon(Icons.search, color: Colors.white),
-                  filled: true,
-                  fillColor: Colors.white.withOpacity(0.15),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-
+            _buildHeader(context),
+            _buildSearchField(context),
             Expanded(
               child: Container(
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(26),
-                    topRight: Radius.circular(26),
-                  ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
                 ),
                 child: RefreshIndicator(
-                  onRefresh: _loadData,
+                  onRefresh: () async {
+                    await _loadData();
+                    await _loadUserImage();
+                  },
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.only(bottom: 80),
@@ -160,40 +109,78 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+      bottomNavigationBar: _buildBottomBar(context),
+    );
+  }
 
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFF001E6C),
-          boxShadow: [
-            BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, -2)),
-          ],
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildNavButton(Icons.home, "Início", true, () {}),
-            _buildNavButton(Icons.explore, "Explorar", false, () {
-              Navigator.push(
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () async {
+              final updated = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => TourListPage(query: '')),
-              );
-            }),
-            _buildNavButton(Icons.person, "Perfil", false, () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AccountPage(
+                  builder: (_) => AccountPage(
                     userName: widget.userName,
                     userEmail: widget.userEmail,
                   ),
                 ),
               );
-              _loadUserImage();
-            }),
-          ],
+              if (updated == true) _loadUserImage();
+            },
+            child: CircleAvatar(
+              radius: 35,
+              backgroundImage: _userImage != null
+                  ? FileImage(_userImage!)
+                  : const AssetImage("assets/profile.jpg") as ImageProvider,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              "Olá, ${widget.userName} 👋\nExplore o melhor de João Pessoa!",
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                height: 1.4,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchField(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: TextField(
+        onSubmitted: (value) {
+          if (value.trim().isNotEmpty) {
+            Navigator.push(
+              context,
+              _buildFadeRoute(TourListPage(query: value.trim())),
+            );
+          }
+        },
+        decoration: InputDecoration(
+          hintText: "Buscar passeios ou empresas...",
+          hintStyle: const TextStyle(color: Colors.white70),
+          prefixIcon: const Icon(Icons.search, color: Colors.white),
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.15),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide.none,
+          ),
         ),
+        style: const TextStyle(color: Colors.white),
       ),
     );
   }
@@ -214,114 +201,200 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildRecentTours() {
     if (_recentTours.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(20),
-          child: Text("Nenhum anúncio recente encontrado."),
-        ),
+      return const Padding(
+        padding: EdgeInsets.all(20),
+        child: Center(child: Text("Nenhum anúncio recente encontrado.")),
       );
     }
 
-    return SizedBox(
-      height: 220,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: _recentTours.length,
-        itemBuilder: (context, index) {
-          final tour = _recentTours[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => TourListPage(query: tour["nome"])),
+    return Column(
+      children: [
+        SizedBox(
+          height: 230,
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: _recentTours.length,
+            itemBuilder: (context, index) {
+              final tour = _recentTours[index];
+              return AnimatedBuilder(
+                animation: _pageController,
+                builder: (context, child) {
+                  double scale = 1.0;
+                  if (_pageController.hasClients &&
+                      _pageController.position.haveDimensions) {
+                    final page = _pageController.page ?? 0.0;
+                    scale = (1 - ((page - index).abs() * 0.2)).clamp(0.8, 1.0);
+                  }
+                  return Transform.scale(
+                    scale: scale,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          _buildFadeRoute(TourListPage(query: tour["nome"])),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(18),
+                          image: DecorationImage(
+                            image: _buildImageProvider(tour["imagens"]),
+                            fit: BoxFit.cover,
+                          ),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 6,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(18),
+                            gradient: const LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [Colors.black54, Colors.transparent],
+                            ),
+                          ),
+                          padding: const EdgeInsets.all(12),
+                          alignment: Alignment.bottomLeft,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                tour["nome"] ?? "Passeio",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
+                                "R\$ ${tour["preco"] ?? "0,00"}",
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               );
             },
-            child: Container(
-              width: 180,
-              margin: const EdgeInsets.only(right: 12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                image: DecorationImage(
-                  image: _buildImageProvider(tour["imagens"]),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: const LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [Colors.black54, Colors.transparent],
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      tour["nome"] ?? "Passeio",
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15),
-                    ),
-                    Text(
-                      "R\$ ${tour["preco"] ?? "0,00"}",
-                      style: const TextStyle(color: Colors.white70, fontSize: 13),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        SmoothPageIndicator(
+          controller: _pageController,
+          count: _recentTours.length,
+          effect: ExpandingDotsEffect(
+            dotHeight: 8,
+            dotWidth: 8,
+            spacing: 6,
+            dotColor: Colors.grey.shade300,
+            activeDotColor: const Color(0xFF001E6C),
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildCompanyList() {
-    if (_companies.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(20),
-          child: Text("Nenhuma empresa cadastrada."),
-        ),
-      );
-    }
+Widget _buildCompanyList() {
+  if (_companies.isEmpty) {
+    return const Padding(
+      padding: EdgeInsets.all(20),
+      child: Center(child: Text("Nenhuma empresa cadastrada.")),
+    );
+  }
 
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: _companies.length,
-      itemBuilder: (context, index) {
-        final company = _companies[index];
-        return ListTile(
+  return ListView.separated(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    itemCount: _companies.length,
+    separatorBuilder: (context, index) => const SizedBox(height: 10), 
+    itemBuilder: (context, index) {
+      final company = _companies[index];
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ListTile(
           leading: CircleAvatar(
             radius: 28,
             backgroundImage: _buildImageProvider(company["logo"]),
           ),
           title: Text(
             company["company_name"] ?? "Empresa",
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: Text(
-            "Avaliação: ${company["avaliacao"]?.toStringAsFixed(1) ?? "N/A"} ⭐",
-            style: const TextStyle(color: Colors.grey),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF001E6C),
+            ),
           ),
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (_) => TourListPage(query: company["company_name"]),
+              _buildFadeRoute(
+                TourListPage(query: company["company_name"]),
               ),
             );
           },
-        );
-      },
+        ),
+      );
+    },
+  );
+}
+
+
+  Widget _buildBottomBar(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xFF001E6C),
+        boxShadow: [
+          BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, -2)),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildNavButton(Icons.home, "Início", true, () {}),
+          _buildNavButton(Icons.explore, "Explorar", false, () {
+            Navigator.push(
+              context,
+              _buildFadeRoute(TourListPage(query: '')),
+            );
+          }),
+          _buildNavButton(Icons.person, "Perfil", false, () async {
+            final updated = await Navigator.push(
+              context,
+              _buildFadeRoute(
+                AccountPage(
+                  userName: widget.userName,
+                  userEmail: widget.userEmail,
+                ),
+              ),
+            );
+            if (updated == true) _loadUserImage();
+          }),
+        ],
+      ),
     );
   }
 
@@ -343,6 +416,17 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    );
+  }
+
+  Route _buildFadeRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (_, __, ___) => page,
+      transitionsBuilder: (_, animation, __, child) => FadeTransition(
+        opacity: animation,
+        child: child,
+      ),
+      transitionDuration: const Duration(milliseconds: 300),
     );
   }
 }

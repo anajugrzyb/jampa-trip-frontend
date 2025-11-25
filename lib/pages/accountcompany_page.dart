@@ -1,12 +1,55 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:jampa_trip/pages/informationcompany_page.dart';
+import 'package:image_picker/image_picker.dart';
+import '../data/db_helper.dart';
+import 'informationcompany_page.dart';
 import 'mytours_page.dart';
 import 'login_page.dart';
 
-class AccountCompanyPage extends StatelessWidget {
+class AccountCompanyPage extends StatefulWidget {
   final String userName;
+  final String userEmail; 
 
-  const AccountCompanyPage({super.key, required this.userName});
+  const AccountCompanyPage({
+    super.key,
+    required this.userName,
+    required this.userEmail,
+  });
+
+  @override
+  State<AccountCompanyPage> createState() => _AccountCompanyPageState();
+}
+
+class _AccountCompanyPageState extends State<AccountCompanyPage> {
+  File? _selectedImage;
+  final db = DBHelper();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCompanyImage();
+  }
+
+  Future<void> _loadCompanyImage() async {
+    final logoPath = await db.getCompanyLogo(widget.userEmail);
+    if (logoPath != null && File(logoPath).existsSync()) {
+      setState(() {
+        _selectedImage = File(logoPath);
+      });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        _selectedImage = File(image.path);
+      });
+      await db.updateCompanyLogo(widget.userEmail, image.path);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,30 +61,55 @@ class AccountCompanyPage extends StatelessWidget {
             const SizedBox(height: 40),
 
             Center(
-              child: Column(
+              child: Stack(
+                alignment: Alignment.bottomRight,
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 50,
-                    backgroundImage: AssetImage("assets/profile.jpg"),
+                    backgroundImage: _selectedImage != null
+                        ? FileImage(_selectedImage!)
+                        : const AssetImage("assets/profile.jpg")
+                            as ImageProvider,
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    userName,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    "Informações",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
+                  Positioned(
+                    bottom: 0,
+                    right: 4,
+                    child: InkWell(
+                      onTap: _pickImage,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.blue, width: 2),
+                        ),
+                        padding: const EdgeInsets.all(6),
+                        child: const Icon(
+                          Icons.camera_alt,
+                          color: Colors.blue,
+                          size: 20,
+                        ),
+                      ),
                     ),
                   ),
                 ],
+              ),
+            ),
+
+            const SizedBox(height: 12),
+            Text(
+              widget.userName,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              "Informações da empresa",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
               ),
             ),
 
@@ -67,7 +135,9 @@ class AccountCompanyPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => InformationCompanyPage(email: userName),
+                            builder: (context) => InformationCompanyPage(
+                              email: widget.userEmail, 
+                            ),
                           ),
                         );
                       },
@@ -80,7 +150,8 @@ class AccountCompanyPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => MyToursPage(userName: userName),
+                            builder: (context) =>
+                                MyToursPage(userName: widget.userName),
                           ),
                         );
                       },
@@ -116,7 +187,8 @@ class AccountCompanyPage extends StatelessWidget {
                       onPressed: () {
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => const LoginPage()),
+                          MaterialPageRoute(
+                              builder: (context) => const LoginPage()),
                           (Route<dynamic> route) => false,
                         );
                       },
@@ -144,15 +216,12 @@ class AccountCompanyPage extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         leading: Icon(icon, color: Colors.blue.shade900),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(subtitle),
-        trailing: const Icon(Icons.arrow_back, size: 16, color: Colors.white,),
+        trailing:
+            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.blue),
         onTap: onTap,
       ),
     );
   }
 }
-

@@ -42,7 +42,7 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
       context,
       MaterialPageRoute(
         builder: (context) =>
-            AccountCompanyPage(userName: companyNameController.text),
+            AccountCompanyPage(userName: companyNameController.text, userEmail: emailController.text),
       ),
     );
   }

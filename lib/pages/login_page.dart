@@ -47,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              AccountCompanyPage(userName: company['company_name']),
+              AccountCompanyPage(userName: company['company_name'], userEmail: company['email']),
         ),
       );
       return;
