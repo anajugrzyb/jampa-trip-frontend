@@ -34,7 +34,11 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
         'imagem': tour['imagens'],
         'saida': tour['saida'],
         'chegada': tour['chegada'],
+        'status': (reserva['status'] ?? 'pendente').toString(),
       };
+       }).where((reserva) {
+      final status = reserva['status']?.toLowerCase() ?? 'pendente';
+      return status == 'aprovado' || status == 'pendente';
     }).toList();
 
     setState(() {
@@ -48,17 +52,40 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
     _loadReservations();
   }
 
-  ImageProvider _buildImageProvider(String? path) {
-    if (path == null || path.isEmpty) {
+ ImageProvider _buildImageProvider(String? paths) {
+    if (paths == null || paths.isEmpty) {
       return const AssetImage("lib/assets/images/no_image.png");
     }
 
-    if (path.startsWith('http')) return NetworkImage(path);
+     final imagePaths = paths
+        .split(',')
+        .map((p) => p.trim())
+        .where((p) => p.isNotEmpty)
+        .toList();
 
-    final file = File(path);
+     if (imagePaths.isEmpty) {
+      return const AssetImage("lib/assets/images/no_image.png");
+    }
+
+    final firstImage = imagePaths.first;
+
+    if (firstImage.startsWith('http')) return NetworkImage(firstImage);
+
+    final file = File(firstImage);
     return file.existsSync()
         ? FileImage(file)
         : const AssetImage("lib/assets/images/no_image.png");
+  }
+
+  Color _statusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'aprovado':
+        return Colors.green;
+      case 'recusado':
+        return Colors.redAccent;
+      default:
+        return Colors.amber;
+    }
   }
 
   @override
@@ -85,6 +112,9 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
               itemCount: _reservations.length,
               itemBuilder: (context, index) {
                 final reserva = _reservations[index];
+                final status = (reserva['status'] ?? 'pendente').toString();
+                final double valorTotal =
+                    (reserva['valor_total'] as num?)?.toDouble() ?? 0;
 
                 return Card(
                   margin: const EdgeInsets.only(bottom: 16),
@@ -112,12 +142,55 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    reserva['tour_nome'] ?? 'Passeio',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF001E6C),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: _statusColor(status).withOpacity(0.12),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.circle,
+                                        size: 10,
+                                        color: _statusColor(status),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        status.toUpperCase(),
+                                        style: TextStyle(
+                                          color: _statusColor(status),
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
                             Text(
-                              reserva['tour_nome'] ?? 'Passeio',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF001E6C),
+                               status == 'aprovado'
+                                  ? 'Passeio aprovado pela empresa'
+                                  : 'Aguardando aprovação da empresa',
+                              style: TextStyle(
+                                color: _statusColor(status),
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -157,7 +230,7 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              "Valor Total: R\$ ${reserva['valor_total']?.toStringAsFixed(2) ?? '0.00'}",
+                              "Valor Total: R\$ ${valorTotal.toStringAsFixed(2)}",
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF001E6C),
