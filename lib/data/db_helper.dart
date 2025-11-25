@@ -20,7 +20,7 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 16,
+      version: 17,
       onCreate: (db, version) async {
         await _createTables(db);
       },
@@ -78,6 +78,12 @@ class DBHelper {
           } catch (_) {}
           try {
             await db.execute('ALTER TABLE feedbacks ADD COLUMN tour_nome TEXT');
+          } catch (_) {}
+        }
+
+        if (oldVersion < 17) {
+          try {
+            await db.execute('ALTER TABLE feedbacks ADD COLUMN rating INTEGER');
           } catch (_) {}
         }
       },
