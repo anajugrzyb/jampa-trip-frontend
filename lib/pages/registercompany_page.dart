@@ -53,8 +53,11 @@ class _RegisterCompanyPageState extends State<RegisterCompanyPage> {
       backgroundColor: const Color(0xFF000080),
       appBar: AppBar(
         backgroundColor: const Color(0xFF000080),
-        title: const Text("Cadastro de Empresa"),
+        title: const Text("Cadastro de Empresa", style: TextStyle(color: Colors.white, fontSize: 16) ),
         centerTitle: true,
+        iconTheme: const IconThemeData(
+          color: Colors.white, // ✅ Deixa o ícone de voltar branco
+        ),
       ),
       body: Center(
         child: SingleChildScrollView(
