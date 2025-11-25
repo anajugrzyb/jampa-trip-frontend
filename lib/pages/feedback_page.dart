@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import '../data/db_helper.dart';
 
 class FeedbackPage extends StatefulWidget {
-  const FeedbackPage({super.key});
+  final String? companyName;
+  final String? tourName;
+
+  const FeedbackPage({super.key, this.companyName, this.tourName});
 
   @override
   State<FeedbackPage> createState() => _FeedbackPageState();
@@ -13,6 +16,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
   int _rating = 0;
   bool _isSubmitting = false;
   bool _isLoading = true;
+  double _averageRating = 0;
   final DBHelper _dbHelper = DBHelper();
   final TextEditingController _controller = TextEditingController();
   List<Map<String, dynamic>> _feedbacks = [];
@@ -24,11 +28,15 @@ class _FeedbackPageState extends State<FeedbackPage> {
   }
 
   Future<void> _loadFeedbacks() async {
-    final feedbacks = await _dbHelper.getFeedbacks();
+    final feedbacks = await _dbHelper.getFeedbacks(company: widget.companyName);
+    final average = widget.companyName != null && widget.companyName!.isNotEmpty
+        ? await _dbHelper.getAverageRatingForCompany(widget.companyName!)
+        : 0;
     if (mounted) {
       setState(() {
         _feedbacks = feedbacks;
         _isLoading = false;
+        _averageRating = average;
       });
     }
   }
@@ -37,6 +45,16 @@ class _FeedbackPageState extends State<FeedbackPage> {
     if (_isSubmitting) return;
 
     final comment = _controller.text.trim();
+
+    if (widget.companyName == null || widget.companyName!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              "Selecione um passeio ou empresa para enviar o feedback."),
+        ),
+      );
+      return;
+    }
 
     if (_rating == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -58,7 +76,12 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
     setState(() => _isSubmitting = true);
 
-    await _dbHelper.insertFeedback(rating: _rating, comment: comment);
+    await _dbHelper.insertFeedback(
+      rating: _rating,
+      comment: comment,
+      company: widget.companyName!,
+      tourName: widget.tourName,
+    );
     await _loadFeedbacks();
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -103,6 +126,53 @@ class _FeedbackPageState extends State<FeedbackPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
+            if (widget.companyName != null)
+              Column(
+                children: [
+                  Text(
+                    "Feedback para ${widget.companyName}",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (widget.tourName != null)
+                    Text(
+                      widget.tourName!,
+                      style: TextStyle(
+                        color: Colors.blue[100],
+                        fontSize: 14,
+                      ),
+                    ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.star, color: Colors.amber[400]),
+                      const SizedBox(width: 6),
+                      Text(
+                        _feedbacks.isEmpty
+                            ? "Sem avaliações"
+                            : _averageRating.toStringAsFixed(1),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
+                      if (_feedbacks.isNotEmpty) ...[
+                        const SizedBox(width: 6),
+                        Text(
+                          "(${_feedbacks.length} comentários)",
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                      ]
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                ],
+              ),
             Text(
               "Nos conte sua experiência!",
               style: TextStyle(
