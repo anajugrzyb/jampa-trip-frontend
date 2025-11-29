@@ -20,52 +20,33 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 18,
+      version: 19, 
       onCreate: (db, version) async {
         await _createTables(db);
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 10) {
-          try {
-            await db.execute('ALTER TABLE companies ADD COLUMN logo TEXT');
-          } catch (_) {}
-          try {
-            await db.execute('ALTER TABLE companies ADD COLUMN avaliacao REAL DEFAULT 0');
-          } catch (_) {}
-          try {
-            await db.execute('ALTER TABLE companies ADD COLUMN descricao TEXT');
-          } catch (_) {}
+          try { await db.execute('ALTER TABLE companies ADD COLUMN logo TEXT'); } catch (_) {}
+          try { await db.execute('ALTER TABLE companies ADD COLUMN avaliacao REAL DEFAULT 0'); } catch (_) {}
+          try { await db.execute('ALTER TABLE companies ADD COLUMN descricao TEXT'); } catch (_) {}
         }
 
         if (oldVersion < 11) {
-          try {
-            await db.execute('ALTER TABLE users ADD COLUMN profile_image TEXT');
-          } catch (_) {}
+          try { await db.execute('ALTER TABLE users ADD COLUMN profile_image TEXT'); } catch (_) {}
         }
 
         if (oldVersion < 12) {
-          try {
-            await db.execute('ALTER TABLE reservas ADD COLUMN tour_nome TEXT');
-          } catch (_) {}
-          try {
-            await db.execute('ALTER TABLE reservas ADD COLUMN empresa TEXT');
-          } catch (_) {}
-          try {
-            await db.execute('ALTER TABLE reservas ADD COLUMN valor_total REAL');
-          } catch (_) {}
+          try { await db.execute('ALTER TABLE reservas ADD COLUMN tour_nome TEXT'); } catch (_) {}
+          try { await db.execute('ALTER TABLE reservas ADD COLUMN empresa TEXT'); } catch (_) {}
+          try { await db.execute('ALTER TABLE reservas ADD COLUMN valor_total REAL'); } catch (_) {}
         }
 
         if (oldVersion < 13) {
-          try {
-            await db.execute('ALTER TABLE companies ADD COLUMN logo TEXT');
-          } catch (_) {}
+          try { await db.execute('ALTER TABLE companies ADD COLUMN logo TEXT'); } catch (_) {}
         }
 
         if (oldVersion < 14) {
-          try {
-            await db.execute(
-                "ALTER TABLE reservas ADD COLUMN status TEXT DEFAULT 'pendente'");
-          } catch (_) {}
+          try { await db.execute("ALTER TABLE reservas ADD COLUMN status TEXT DEFAULT 'pendente'"); } catch (_) {}
         }
 
         if (oldVersion < 15) {
@@ -73,30 +54,24 @@ class DBHelper {
         }
 
         if (oldVersion < 16) {
-          try {
-            await db.execute('ALTER TABLE feedbacks ADD COLUMN company TEXT');
-          } catch (_) {}
-          try {
-            await db.execute('ALTER TABLE feedbacks ADD COLUMN tour_nome TEXT');
-          } catch (_) {}
+          try { await db.execute('ALTER TABLE feedbacks ADD COLUMN company TEXT'); } catch (_) {}
+          try { await db.execute('ALTER TABLE feedbacks ADD COLUMN tour_nome TEXT'); } catch (_) {}
         }
 
         if (oldVersion < 17) {
-          try {
-            await db.execute('ALTER TABLE feedbacks ADD COLUMN rating INTEGER');
-          } catch (_) {}
+          try { await db.execute('ALTER TABLE feedbacks ADD COLUMN rating INTEGER'); } catch (_) {}
         }
 
         if (oldVersion < 18) {
-          try {
-            await db.execute('ALTER TABLE feedbacks ADD COLUMN comment TEXT');
-          } catch (_) {}
+          try { await db.execute('ALTER TABLE feedbacks ADD COLUMN comment TEXT'); } catch (_) {}
+        }
+
+        if (oldVersion < 19) {
+          try { await db.execute('ALTER TABLE feedbacks ADD COLUMN created_at TEXT'); } catch (_) {}
         }
       },
-
     );
   }
-
 
   Future<void> _createTables(Database db) async {
     await db.execute('''
@@ -224,54 +199,6 @@ class DBHelper {
     return await dbClient.insert('companies', company);
   }
 
-  Future<int> insertFeedback({
-    required int rating,
-    required String comment,
-    required String company,
-    String? tourName,
-  }) async {
-    final dbClient = await db;
-    return await dbClient.insert('feedbacks', {
-      'rating': rating,
-      'comment': comment,
-      'company': company,
-      'tour_nome': tourName,
-      'created_at': DateTime.now().toIso8601String(),
-    });
-  }
-
-  Future<List<Map<String, dynamic>>> getFeedbacks({String? company}) async {
-    final dbClient = await db;
-    if (company != null && company.isNotEmpty) {
-      return await dbClient.query(
-        'feedbacks',
-        where: 'company = ?',
-        whereArgs: [company],
-        orderBy: 'created_at DESC',
-      );
-    }
-
-    return await dbClient.query(
-      'feedbacks',
-      orderBy: 'created_at DESC',
-    );
-  }
-
-  Future<double> getAverageRatingForCompany(String company) async {
-    final dbClient = await db;
-    final result = await dbClient.rawQuery(
-      'SELECT AVG(rating) as avg_rating FROM feedbacks WHERE company = ?',
-      [company],
-    );
-
-    final avgValue = result.first['avg_rating'];
-    if (avgValue == null) return 0;
-
-    if (avgValue is double) return avgValue;
-    if (avgValue is int) return avgValue.toDouble();
-    return double.tryParse(avgValue.toString()) ?? 0;
-  }
-
   Future<Map<String, dynamic>?> getCompany(String email, String password) async {
     final dbClient = await db;
     final result = await dbClient.query(
@@ -393,6 +320,54 @@ class DBHelper {
     return (total is int) ? total : int.tryParse(total.toString()) ?? 0;
   }
 
+  Future<int> insertFeedback({
+    required int rating,
+    required String comment,
+    required String company,
+    String? tourName,
+  }) async {
+    final dbClient = await db;
+    return await dbClient.insert('feedbacks', {
+      'rating': rating,
+      'comment': comment,
+      'company': company,
+      'tour_nome': tourName,
+      'created_at': DateTime.now().toIso8601String(),
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getFeedbacks({String? company}) async {
+    final dbClient = await db;
+
+    if (company != null && company.isNotEmpty) {
+      return await dbClient.query(
+        'feedbacks',
+        where: 'company = ?',
+        whereArgs: [company],
+        orderBy: 'created_at DESC',
+      );
+    }
+
+    return await dbClient.query(
+      'feedbacks',
+      orderBy: 'created_at DESC',
+    );
+  }
+
+  Future<double> getAverageRatingForCompany(String company) async {
+    final dbClient = await db;
+    final result = await dbClient.rawQuery(
+      'SELECT AVG(rating) as avg_rating FROM feedbacks WHERE company = ?',
+      [company],
+    );
+
+    final avgValue = result.first['avg_rating'];
+    if (avgValue == null) return 0;
+
+    if (avgValue is double) return avgValue;
+    if (avgValue is int) return avgValue.toDouble();
+    return double.tryParse(avgValue.toString()) ?? 0;
+  }
 
   Future<int> insertCard(Map<String, dynamic> card) async {
     final dbClient = await db;
@@ -414,3 +389,4 @@ class DBHelper {
     await dbClient.delete('cards');
   }
 }
+

@@ -36,7 +36,8 @@ class _FeedbackPageState extends State<FeedbackPage> {
       setState(() {
         _feedbacks = feedbacks;
         _isLoading = false;
-        _averageRating = average;
+        _averageRating = average.toDouble();
+
       });
     }
   }
