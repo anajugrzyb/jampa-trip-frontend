@@ -20,7 +20,7 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 19, 
+      version:20, 
       onCreate: (db, version) async {
         await _createTables(db);
       },
@@ -68,6 +68,10 @@ class DBHelper {
 
         if (oldVersion < 19) {
           try { await db.execute('ALTER TABLE feedbacks ADD COLUMN created_at TEXT'); } catch (_) {}
+        }
+
+        if (oldVersion < 20) {
+          try { await db.execute('ALTER TABLE feedbacks ADD COLUMN user_email TEXT'); } catch (_) {}
         }
       },
     );
@@ -153,7 +157,8 @@ class DBHelper {
         comment TEXT,
         company TEXT,
         tour_nome TEXT,
-        created_at TEXT
+        created_at TEXT,
+        user_email TEXT
       )
     ''');
   }
@@ -325,6 +330,7 @@ class DBHelper {
     required String comment,
     required String company,
     String? tourName,
+    String? userEmail,
   }) async {
     final dbClient = await db;
     return await dbClient.insert('feedbacks', {
@@ -333,6 +339,7 @@ class DBHelper {
       'company': company,
       'tour_nome': tourName,
       'created_at': DateTime.now().toIso8601String(),
+      'user_email': userEmail,
     });
   }
 
@@ -351,6 +358,31 @@ class DBHelper {
     return await dbClient.query(
       'feedbacks',
       orderBy: 'created_at DESC',
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> getFeedbacksByUser(String userEmail) async {
+    final dbClient = await db;
+    return await dbClient.query(
+      'feedbacks',
+      where: 'user_email = ?',
+      whereArgs: [userEmail],
+      orderBy: 'created_at DESC',
+    );
+  }
+
+  Future<int> updateFeedback({required int id, int? rating, String? comment}) async {
+    final dbClient = await db;
+    final updateData = <String, dynamic>{};
+
+    if (rating != null) updateData['rating'] = rating;
+    if (comment != null) updateData['comment'] = comment;
+
+    return await dbClient.update(
+      'feedbacks',
+      updateData,
+      where: 'id = ?',
+      whereArgs: [id],
     );
   }
 

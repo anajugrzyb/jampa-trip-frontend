@@ -4,7 +4,9 @@ import '../data/db_helper.dart';
 import 'feedback_page.dart';
 
 class MyReservationsPage extends StatefulWidget {
-  const MyReservationsPage({super.key});
+  final String? userEmail;
+
+  const MyReservationsPage({super.key, this.userEmail});
 
   @override
   State<MyReservationsPage> createState() => _MyReservationsPageState();
@@ -249,15 +251,16 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (_) => FeedbackPage(
-                                              companyName:
-                                                  reserva['empresa'] as String?,
-                                              tourName:
-                                                  reserva['tour_nome'] as String?,
-                                            ),
-                                          ),
-                                        );
-                                      },
+                                             builder: (_) => FeedbackPage(
+                                          companyName:
+                                              reserva['empresa'] as String?,
+                                          tourName:
+                                              reserva['tour_nome'] as String?,
+                                          userEmail: widget.userEmail,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                       icon: const Icon(Icons.star_rate,
                                           color: Color(0xFF00008B)),
                                       label: const Text(

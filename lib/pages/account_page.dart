@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:jampa_trip/pages/myreservation_page.dart';
 import 'login_page.dart';
 import 'informationuser_page.dart';
-import 'feedback_page.dart';
+import 'my_feedbacks_page.dart';
 import 'history_page.dart';
 import '../data/db_helper.dart';
 
@@ -162,7 +162,7 @@ class _AccountPageState extends State<AccountPage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                MyReservationsPage(),
+                                MyReservationsPage(userEmail: widget.userEmail),
                           ),
                         );
                       },
@@ -175,7 +175,7 @@ class _AccountPageState extends State<AccountPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const HistoryPage(),
+                            builder: (context) => HistoryPage(userEmail: widget.userEmail),
                           ),
                         );
                       },
@@ -188,7 +188,8 @@ class _AccountPageState extends State<AccountPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const FeedbackPage(),
+                             builder: (context) =>
+                                MyFeedbacksPage(userEmail: widget.userEmail),
                           ),
                         );
                       },

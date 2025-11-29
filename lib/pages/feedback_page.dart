@@ -5,8 +5,9 @@ import '../data/db_helper.dart';
 class FeedbackPage extends StatefulWidget {
   final String? companyName;
   final String? tourName;
+  final String? userEmail;
 
-  const FeedbackPage({super.key, this.companyName, this.tourName});
+  const FeedbackPage({super.key, this.companyName, this.tourName, this.userEmail});
 
   @override
   State<FeedbackPage> createState() => _FeedbackPageState();
@@ -82,6 +83,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
       comment: comment,
       company: widget.companyName!,
       tourName: widget.tourName,
+      userEmail: widget.userEmail,
     );
     await _loadFeedbacks();
 

@@ -7,7 +7,9 @@ import '../data/db_helper.dart';
 import 'feedback_page.dart';
 
 class HistoryPage extends StatefulWidget {
-  const HistoryPage({super.key});
+    final String? userEmail;
+
+  const HistoryPage({super.key, this.userEmail});
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
@@ -263,14 +265,15 @@ class _HistoryPageState extends State<HistoryPage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (_) => FeedbackPage(
-                                          companyName:
-                                              reserva['empresa'] as String?,
-                                          tourName:
-                                              reserva['tour_nome'] as String?,
-                                        ),
+                                        companyName:
+                                            reserva['empresa'] as String?,
+                                        tourName:
+                                            reserva['tour_nome'] as String?,
+                                        userEmail: widget.userEmail,
                                       ),
-                                    );
-                                  },
+                                    ),
+                                  );
+                                },
                                   icon: const Icon(Icons.rate_review,
                                       color: Color(0xFF00008B)),
                                   label: const Text(
