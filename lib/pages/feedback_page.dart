@@ -98,6 +98,37 @@ class _FeedbackPageState extends State<FeedbackPage> {
     });
   }
 
+  Future<void> _deleteFeedback(int id) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Excluir feedback'),
+        content: const Text('Deseja realmente excluir este comentário?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    await _dbHelper.deleteFeedback(id);
+    await _loadFeedbacks();
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Feedback excluído com sucesso.')),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -350,6 +381,15 @@ class _FeedbackPageState extends State<FeedbackPage> {
                             subtitle: Text(
                               "Enviado em ${createdAt.day.toString().padLeft(2, '0')}/${createdAt.month.toString().padLeft(2, '0')}/${createdAt.year}",
                               style: const TextStyle(color: Colors.black54),
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                              onPressed: () {
+                                final id = item['id'] as int?;
+                                if (id != null) {
+                                  _deleteFeedback(id);
+                                }
+                              },
                             ),
                           );
                         },

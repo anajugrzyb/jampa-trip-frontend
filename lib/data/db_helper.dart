@@ -369,6 +369,12 @@ class DBHelper {
     return double.tryParse(avgValue.toString()) ?? 0;
   }
 
+  Future<int> deleteFeedback(int id) async {
+    final dbClient = await db;
+    return await dbClient.delete('feedbacks', where: 'id = ?', whereArgs: [id]);
+  }
+
+
   Future<int> insertCard(Map<String, dynamic> card) async {
     final dbClient = await db;
     return await dbClient.insert('cards', card);
