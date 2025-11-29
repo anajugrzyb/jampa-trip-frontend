@@ -19,6 +19,20 @@ class _TourListPageState extends State<TourListPage>
   bool _isLoading = true;
   late TabController _tabController;
 
+  ImageProvider _buildCompanyImage(String? path) {
+    if (path == null || path.isEmpty) {
+      return const AssetImage("lib/assets/images/profile.png");
+    }
+
+    final file = File(path);
+    if (file.existsSync()) {
+      return FileImage(file);
+    }
+
+    return const AssetImage("lib/assets/images/profile.png");
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -202,9 +216,11 @@ class _TourListPageState extends State<TourListPage>
                   topLeft: Radius.circular(16),
                   bottomLeft: Radius.circular(16),
                 ),
+                image: DecorationImage(
+                  image: _buildCompanyImage(company['logo'] as String?),
+                  fit: BoxFit.cover,
+                ),
               ),
-              alignment: Alignment.center,
-              child: const Icon(Icons.store, size: 40, color: Colors.white),
             ),
             Expanded(
               child: Padding(
