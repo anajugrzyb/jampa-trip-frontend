@@ -46,7 +46,10 @@ class _HomePageState extends State<HomePage> {
     final companies = await db.getCompanies();
 
     setState(() {
-      _recentTours = tours.reversed.take(5).toList();
+      final sortedTours = List<Map<String, dynamic>>.from(tours)
+        ..sort((a, b) => ((b['id'] ?? 0) as int).compareTo((a['id'] ?? 0) as int));
+
+      _recentTours = sortedTours.take(5).toList();
       _companies = companies;
     });
   }
@@ -61,9 +64,23 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  ImageProvider _buildImageProvider(String? path) {
+    String? _extractPrimaryImage(String? rawPath) {
+    if (rawPath == null || rawPath.isEmpty) return null;
+
+    final paths = rawPath
+        .split(',')
+        .map((p) => p.trim())
+        .where((p) => p.isNotEmpty)
+        .toList();
+
+    return paths.isNotEmpty ? paths.first : null;
+  }
+
+  ImageProvider _buildImageProvider(String? rawPath) {
+    final path = _extractPrimaryImage(rawPath);
+
     if (path == null || path.isEmpty) {
-      return const AssetImage("assets/profile.jpg");
+       return const AssetImage("lib/assets/images/planeta.png");
     }
     return (path.contains('/data/') || path.contains('/storage/'))
         ? FileImage(File(path))
