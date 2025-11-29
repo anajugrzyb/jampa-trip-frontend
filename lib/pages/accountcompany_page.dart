@@ -6,6 +6,7 @@ import 'informationcompany_page.dart';
 import 'mytours_page.dart';
 import 'login_page.dart';
 import 'company_reservations_page.dart';
+import 'company_feedbacks_page.dart';
 
 class AccountCompanyPage extends StatefulWidget {
   final String userName;
@@ -173,16 +174,18 @@ class _AccountCompanyPageState extends State<AccountCompanyPage> {
                       },
                     ),
                     _buildMenuItem(
-                      icon: Icons.history,
-                      title: "Histórico",
-                      subtitle: "Meus passeios",
-                      onTap: () {},
-                    ),
-                    _buildMenuItem(
                       icon: Icons.feedback,
-                      title: "Feedback",
-                      subtitle: "Meus comentários",
-                      onTap: () {},
+                      title: "Feedbacks",
+                      subtitle: "Avaliações recebidas",
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                CompanyFeedbacksPage(companyName: widget.userName),
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 16),
                     OutlinedButton.icon(
