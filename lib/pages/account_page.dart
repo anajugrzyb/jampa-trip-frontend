@@ -5,6 +5,7 @@ import 'package:jampa_trip/pages/myreservation_page.dart';
 import 'login_page.dart';
 import 'informationuser_page.dart';
 import 'feedback_page.dart';
+import 'history_page.dart';
 import '../data/db_helper.dart';
 
 class AccountPage extends StatefulWidget {
@@ -170,7 +171,14 @@ class _AccountPageState extends State<AccountPage> {
                       icon: Icons.history,
                       title: "Histórico",
                       subtitle: "Meus passeios",
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HistoryPage(),
+                          ),
+                        );
+                      },
                     ),
                     _buildMenuItem(
                       icon: Icons.feedback,
