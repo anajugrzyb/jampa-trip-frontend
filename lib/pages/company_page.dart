@@ -17,6 +17,25 @@ class _CompanyPageState extends State<CompanyPage> {
   List<Map<String, dynamic>> _feedbacks = [];
   double _averageRating = 0;
 
+    String? _getCompanyImagePath() {
+    final logo = widget.company['logo'] as String?;
+    if (logo != null && logo.isNotEmpty) return logo;
+
+    final imagem = widget.company['imagem'] as String?;
+    if (imagem != null && imagem.isNotEmpty) return imagem;
+
+    return null;
+  }
+
+  ImageProvider _buildCompanyImageProvider() {
+    final imagePath = _getCompanyImagePath();
+    if (imagePath != null && File(imagePath).existsSync()) {
+      return FileImage(File(imagePath));
+    }
+
+    return const AssetImage("assets/company_placeholder.png");
+  }
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +67,7 @@ class _CompanyPageState extends State<CompanyPage> {
   @override
   Widget build(BuildContext context) {
     final empresa = widget.company;
+    final companyImageProvider = _buildCompanyImageProvider();
 
     return Scaffold(
       backgroundColor: const Color(0xFF00008B),
@@ -65,12 +85,10 @@ class _CompanyPageState extends State<CompanyPage> {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  empresa['imagem'] != null && empresa['imagem'].isNotEmpty
-                      ? Image.file(
-                          File(empresa['imagem']),
-                          fit: BoxFit.cover,
-                        )
-                      : Container(color: Colors.blue[700]),
+                  Image(
+                    image: companyImageProvider,
+                    fit: BoxFit.cover,
+                  ),
                   Container(color: Colors.black.withOpacity(0.5)),
                   Align(
                     alignment: Alignment.bottomLeft,
@@ -82,12 +100,7 @@ class _CompanyPageState extends State<CompanyPage> {
                           CircleAvatar(
                             radius: 36,
                             backgroundColor: Colors.white,
-                            backgroundImage: empresa['imagem'] != null &&
-                                    empresa['imagem'].isNotEmpty
-                                ? FileImage(File(empresa['imagem']))
-                                : const AssetImage(
-                                        "assets/company_placeholder.png")
-                                    as ImageProvider,
+                            backgroundImage: companyImageProvider,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
