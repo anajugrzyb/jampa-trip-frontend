@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'account_page.dart';
+import 'company_page.dart';
 import 'tourlist_page.dart';
 import '../data/db_helper.dart';
 
@@ -350,9 +351,7 @@ Widget _buildCompanyList() {
           onTap: () {
             Navigator.push(
               context,
-              _buildFadeRoute(
-                TourListPage(query: company["company_name"]),
-              ),
+              _buildFadeRoute(CompanyPage(company: company)),
             );
           },
         ),
